@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">CarFinder</string>
+    <string name="title_activity_login">Iniciar Sesion</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">INICIAR</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">El email no es correcto</string>
+    <string name="error_invalid_password">La contraseña es demasiado corta</string>
+    <string name="error_incorrect_password">La contraseña no es correcta</string>
+    <string name="error_field_required">Este campo es obligatorio</string>
+    <string name="permission_rationale">"Es necesario otorgar permisos para acceder a internet."
+    </string>
+    <string name="message_register">No tienes cuenta? Registrate pulsando aqui!</string>
+    <string name="register_button">Registrar</string>
+
+</resources>
