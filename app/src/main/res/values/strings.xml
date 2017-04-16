@@ -15,5 +15,6 @@
     </string>
     <string name="message_register">No tienes cuenta? Registrate pulsando aqui!</string>
     <string name="register_button">Registrar</string>
+    <string name="login_message">Iniciando Sesión, espere...</string>
 
 </resources>
