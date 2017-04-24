@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -20,6 +21,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import fdi.ucm.carfinder.connection.Usuarios;
 
 /**
  * A login screen that offers login via email/password.
@@ -84,7 +90,8 @@ public class LoginActivity extends AppCompatActivity {
         mRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Crear actividad de Registro
+                Intent intent = new Intent(view.getContext(), RegisterActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -221,24 +228,34 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
+            Usuarios conexion = new Usuarios();
+            JSONObject resultado = conexion.iniciarSesion(mEmail, mPassword);
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-                if (!mEmail.equals("test@gmail.com") || !mPassword.equals("123456"))
+                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+                    builder.setMessage(resultado.get("errorMessage").toString()).setTitle("Error");
+                    AlertDialog alert = builder.create();
+                    alert.show();
                     return false;
-            } catch (InterruptedException e) {
+                }
+                else {
+                    SharedPreferences sp=getSharedPreferences("Login", 0);
+                    SharedPreferences.Editor Ed=sp.edit();
+                    Ed.putString("User",mEmail );
+                    Ed.putString("Pass",mPassword);
+                    Ed.commit();
+
+                    Intent intent = new Intent(contexto, MainActivity.class);
+                    startActivity(intent);
+
+                    //Crear actividad del menú principal
+
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
                 return false;
             }
-
-            SharedPreferences sp=getSharedPreferences("Login", 0);
-            SharedPreferences.Editor Ed=sp.edit();
-            Ed.putString("User",mEmail );
-            Ed.putString("Pass",mPassword);
-            Ed.commit();
-
-            //Crear actividad del menú principal
-
-            return true;
         }
 
         @Override

@@ -25,6 +25,19 @@
                 <category android:name="fdi.ucm.carfinder.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".RegisterActivity"
+            android:label="@string/title_activity_register">
+            <intent-filter>
+                <action android:name="fdi.ucm.carfinder.RegisterActivity" />
+
+                <category android:name="fdi.ucm.carfinder.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

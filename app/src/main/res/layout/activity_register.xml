@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context="fdi.ucm.carfinder.RegisterActivity">
+
+    <ScrollView
+        android:id="@+id/register_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/insertDatos_registro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:textColor="#FFFFFF"
+                android:text="@string/insertDatos_registro"
+                tools:layout_editor_absoluteX="162dp"
+                tools:layout_editor_absoluteY="36dp" />
+
+            <EditText
+                android:id="@+id/nameTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/insertDatos_registro"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/nombre" />
+
+            <EditText
+                android:id="@+id/lastnameTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/nameTextField"
+                android:layout_below="@+id/nameTextField"
+                android:layout_marginTop="18dp"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/apellidos" />
+
+            <EditText
+                android:id="@+id/emailTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/lastnameTextField"
+                android:layout_below="@+id/lastnameTextField"
+                android:layout_marginTop="18dp"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:hint="Email" />
+
+            <EditText
+                android:id="@+id/dateTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/emailTextField"
+                android:layout_below="@+id/emailTextField"
+                android:layout_marginTop="18dp"
+                android:ems="10"
+                android:background="#FFFFFF"
+                android:inputType="date"
+                android:hint="@string/date"/>
+
+            <EditText
+                android:id="@+id/password1TextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:layout_below="@+id/dateTextField"
+                android:layout_alignStart="@+id/dateTextField"
+                android:layout_marginTop="18dp"
+                android:hint="@string/prompt_password"/>
+
+            <EditText
+                android:id="@+id/password2TextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:layout_below="@+id/password1TextField"
+                android:layout_alignStart="@+id/dateTextField"
+                android:layout_marginTop="18dp"
+                android:hint="@string/Repetir_password"/>
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/password2TextField"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="46dp"
+                android:text="@string/ok" />
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

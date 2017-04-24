@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">CarFinder</string>
     <string name="title_activity_login">Iniciar Sesion</string>
+    <string name="title_activity_register">Registro</string>
+
+    <string name="ok">Aceptar</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -16,5 +19,18 @@
     <string name="message_register">No tienes cuenta? Registrate pulsando aqui!</string>
     <string name="register_button">Registrar</string>
     <string name="login_message">Iniciando Sesión, espere...</string>
+
+    <!-- Strings related to Register -->
+    <string name="insertDatos_registro">Inserte sus datos</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellidos">Apellidos</string>
+    <string name="date">Fecha Naciemiento</string>
+    <string name="Repetir_password">Repetir Contraseña</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 
 </resources>
