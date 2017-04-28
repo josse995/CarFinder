@@ -26,6 +26,9 @@
     <string name="apellidos">Apellidos</string>
     <string name="date">Fecha Naciemiento</string>
     <string name="Repetir_password">Repetir Contraseña</string>
+    <string name="error_passwords_doesnt_match">Las contraseñas no coinciden</string>
+    <string name="progress_register_message">Creando cuenta, espere...</string>
+    <string name="register_ok">Cuenta creada con éxito!</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

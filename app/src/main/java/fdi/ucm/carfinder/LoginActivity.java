@@ -217,11 +217,13 @@ public class LoginActivity extends AppCompatActivity {
         private final String mEmail;
         private final String mPassword;
         private final Context contexto;
+        private String msgError;
 
         UserLoginTask(String email, String password, Context cont) {
             mEmail = email;
             mPassword = password;
             contexto = cont;
+            msgError = "";
         }
 
         @Override
@@ -232,10 +234,7 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject resultado = conexion.iniciarSesion(mEmail, mPassword);
             try {
                 if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
-                    builder.setMessage(resultado.get("errorMessage").toString()).setTitle("Error");
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    msgError = resultado.get("errorMessage").toString();
                     return false;
                 }
                 else {
@@ -266,8 +265,10 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+                builder.setMessage(msgError).setTitle("Error");
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         }
 

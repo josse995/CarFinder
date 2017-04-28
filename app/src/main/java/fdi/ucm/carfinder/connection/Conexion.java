@@ -18,7 +18,7 @@ import java.net.URL;
 
 public class Conexion {
 
-    private final String url = "http://192.168.1.21/carfinder/";
+    private final String url = "http://192.168.1.100/carfinder/";
 
     protected JSONObject ejecutar(String peticion, String modulo) {
         HttpURLConnection client = null;

@@ -20,11 +20,10 @@
         android:id="@+id/login_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login_message"
-        android:layout_centerInParent="true"
         android:layout_below="@id/login_progress"
-        android:visibility="gone"
-        />
+        android:layout_centerInParent="true"
+        android:text="@string/login_message"
+        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/login_form"
