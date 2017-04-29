@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     tools:context="fdi.ucm.carfinder.LoginActivity">
@@ -35,29 +36,28 @@
         <RelativeLayout
             android:id="@+id/email_login_form"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/imageLogoLogin"
                 android:layout_width="168dp"
                 android:layout_height="176dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginTop="50dp"
                 android:layout_marginLeft="20dp"
-                android:src="@drawable/logo"
-                />
+                android:layout_marginTop="50dp"
+                android:src="@drawable/logo" />
 
             <EditText
                 android:id="@+id/email"
                 android:layout_width="253dp"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:hint="@string/prompt_email"
-                android:layout_marginTop="50dp"
                 android:layout_marginLeft="20dp"
+                android:layout_marginTop="50dp"
                 android:layout_toRightOf="@id/imageLogoLogin"
+                android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
-                android:maxLines="1"/>
+                android:maxLines="1" />
 
 
             <EditText
@@ -66,24 +66,24 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/email"
                 android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/imageLogoLogin"
                 android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/imageLogoLogin"
                 android:hint="@string/prompt_password"
                 android:imeActionId="@+id/login"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
-                android:maxLines="1"/>
+                android:maxLines="1" />
 
             <Button
                 android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/imageLogoLogin"
-                android:layout_marginLeft="100dp"
                 android:layout_below="@id/password"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="100dp"
+                android:layout_toRightOf="@id/imageLogoLogin"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
@@ -91,25 +91,25 @@
                 android:id="@+id/mensaje_registro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_below="@id/email_sign_in_button"
-                android:layout_toRightOf="@id/imageLogoLogin"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
-                android:textAlignment="center"
-                android:text="@string/message_register"/>
+                android:layout_toRightOf="@id/imageLogoLogin"
+                android:text="@string/message_register"
+                android:textAlignment="center" />
 
             <Button
                 android:id="@+id/button_register"
                 style="?android:textAppearanceSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/imageLogoLogin"
                 android:layout_below="@id/mensaje_registro"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="100dp"
+                android:layout_toRightOf="@id/imageLogoLogin"
                 android:text="@string/register_button"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </RelativeLayout>
     </ScrollView>

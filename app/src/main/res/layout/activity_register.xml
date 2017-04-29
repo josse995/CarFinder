@@ -29,15 +29,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/register_layout_form"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/insertDatos_registro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
                 android:layout_marginTop="30dp"
                 android:text="@string/insertDatos_registro"
                 android:textColor="#FFFFFF"
@@ -50,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/insertDatos_registro"
                 android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
                 android:layout_marginTop="25dp"
                 android:background="#FFFFFF"
                 android:ems="10"
@@ -62,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/nameTextField"
                 android:layout_below="@+id/nameTextField"
+                android:layout_gravity="center"
                 android:layout_marginTop="18dp"
                 android:background="#FFFFFF"
                 android:ems="10"
@@ -74,6 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/lastnameTextField"
                 android:layout_below="@+id/lastnameTextField"
+                android:layout_gravity="center"
                 android:layout_marginTop="18dp"
                 android:background="#FFFFFF"
                 android:ems="10"
@@ -86,11 +92,13 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/emailTextField"
                 android:layout_below="@+id/emailTextField"
+                android:layout_gravity="center"
                 android:layout_marginTop="18dp"
                 android:background="#FFFFFF"
                 android:ems="10"
                 android:hint="@string/date"
-                android:inputType="date" />
+                android:inputType="date"
+                android:focusable="false"/>
 
             <EditText
                 android:id="@+id/password1TextField"
@@ -98,6 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/dateTextField"
                 android:layout_below="@+id/dateTextField"
+                android:layout_gravity="center"
                 android:layout_marginTop="18dp"
                 android:background="#FFFFFF"
                 android:ems="10"
@@ -110,6 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/dateTextField"
                 android:layout_below="@+id/password1TextField"
+                android:layout_gravity="center"
                 android:layout_marginTop="18dp"
                 android:background="#FFFFFF"
                 android:ems="10"
@@ -122,10 +132,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/password2TextField"
                 android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
                 android:layout_marginTop="46dp"
                 android:text="@string/ok" />
-
-        </RelativeLayout>
+        </LinearLayout>
     </ScrollView>
 
 </RelativeLayout>

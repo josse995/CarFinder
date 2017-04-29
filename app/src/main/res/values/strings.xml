@@ -36,4 +36,10 @@
 
     <string name="action_settings">Settings</string>
 
+    <!-- Strings related to MainActivity -->
+    <string name="start">Inicio</string>
+    <string name="cars">Coches</string>
+    <string name="options">Ajustes</string>
+    <string name="logoff">Cerrar Sesión</string>
+
 </resources>
