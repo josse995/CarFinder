@@ -153,11 +153,19 @@ public class RegisterActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        //Check for valid name and lastName.
-        if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(lastName) && !isNameValid(name, lastName))
-
+        //Check for valid name
+        if(name.isEmpty() || !isNameValid(name)){
+            nameTextField.setError("Nombre incorrecto");
+            focusView = nameTextField;
+            cancel = true;
+        }
+        else if(lastName.isEmpty() || !isNameValid(lastName)){
+            lastnameTextField.setError("Apellidos incorrectos");
+            focusView = lastnameTextField;
+            cancel = true;
+        }
         // Check for a valid password, if the user entered one and check if they are equals.
-        if (!TextUtils.isEmpty(pass1) && !isPasswordValid(pass1)) {
+        else if (TextUtils.isEmpty(pass1) && !isPasswordValid(pass1)) {
             pass1TextField.setError(getString(R.string.error_invalid_password));
             focusView = pass1TextField;
             cancel = true;
@@ -166,9 +174,8 @@ public class RegisterActivity extends AppCompatActivity {
             focusView = pass2TextField;
             cancel = true;
         }
-
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        else if (TextUtils.isEmpty(email)) {
             emailTextField.setError(getString(R.string.error_field_required));
             focusView = emailTextField;
             cancel = true;
@@ -191,8 +198,14 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isNameValid(String name, String lastname){
-        return !name.matches(".*\\d+.*") && !lastname.matches(".*\\d+.*");
+    private boolean isNameValid(String name){
+        char[] chars = name.toCharArray();
+        for(char c : chars){
+            if(!Character.isLetter(c)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isEmailValid(String email) {
