@@ -1,5 +1,6 @@
 package fdi.ucm.carfinder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -81,14 +82,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        Boolean select = false;
+        Intent i = null;
         if (id == R.id.inicio) {
             // Handle the camera action
         } else if (id == R.id.coches) {
 
         } else if (id == R.id.ajustes) {
-
+            select = true;
+            i = new Intent(this, SettingsActivity.class);
         } else if (id == R.id.cerrarSesion) {
 
+        }
+
+        if(select){
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
