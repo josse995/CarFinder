@@ -20,12 +20,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+    <fragment
+        android:id="@+id/fragment"
+        android:name="fdi.ucm.carfinder.SettingsFragment"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_height="wrap_content" />
+
 
 </android.support.design.widget.CoordinatorLayout>
