@@ -2,6 +2,7 @@ package fdi.ucm.carfinder;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,20 +27,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Fragment fr = new SettingsFragment();
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        //fragmentTransaction.replace(R.id.fragment_settings, fr);
-        fragmentTransaction.commit();
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });*/
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -89,6 +84,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        Fragment fragment = null;
         Boolean select = false;
         if (id == R.id.inicio) {
             // Handle the camera action
@@ -96,22 +92,27 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.ajustes) {
             select = true;
-            Fragment fr = new SettingsFragment();
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            //fragmentTransaction.replace(R.id.fragment_settings, fr);
-            fragmentTransaction.commit();
+            fragment = new SettingsFragment();
         } else if (id == R.id.cerrarSesion) {
 
         }
 
+        if (select) {
+            /*FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment_settings, fragment);
+            fragmentTransaction.replace(R.id.contenedor,fragment);
+            fragmentTransaction.commit();*/
+            getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        item.setChecked(true);
-        drawer.closeDrawers();
-        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

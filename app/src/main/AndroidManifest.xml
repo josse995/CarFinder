@@ -39,7 +39,13 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="fdi.ucm.carfinder.MainActivity" />
+
+                <category android:name="fdi.ucm.carfinder.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
