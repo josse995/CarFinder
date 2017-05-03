@@ -92,6 +92,17 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/forgetPasswordTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/forgetPassword"
+                android:clickable="true"
+                android:onClick="forgetPassword"
+                android:layout_below="@+id/email_sign_in_button"
+                android:layout_alignStart="@+id/mensaje_registro"
+                android:layout_marginStart="42dp" />
+
+            <TextView
                 android:id="@+id/mensaje_registro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

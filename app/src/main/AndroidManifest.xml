@@ -46,6 +46,7 @@
                 <category android:name="fdi.ucm.carfinder.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".popup_forget_password"></activity>
     </application>
 
 </manifest>

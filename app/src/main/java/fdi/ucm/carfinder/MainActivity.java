@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        this.setTitle("Inicio");
     }
 
     @Override
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity
         Boolean select = false;
         if (id == R.id.inicio) {
             // Handle the camera action
+
+            this.setTitle("Inicio");
         } else if (id == R.id.coches) {
             select = true;
             fragment = new CarsFragment();

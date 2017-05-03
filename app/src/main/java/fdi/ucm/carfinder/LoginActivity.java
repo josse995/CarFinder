@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,12 +16,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +88,39 @@ public class LoginActivity extends AppCompatActivity {
                 user = mEmailView.getText().toString();
                 password =  mPasswordView.getText().toString();
                 iniciarSesion(user, password);
+            }
+        });
+
+
+        final TextView forgetPassword = (TextView)findViewById(R.id.forgetPasswordTextField);
+        forgetPassword.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(LoginActivity.this);
+                View mView = getLayoutInflater().inflate(R.layout.popup_forget_password, null);
+
+                EditText mEmail = (EditText)mView.findViewById(R.id.email_forget_password);
+                final String email = mEmail.getText().toString();
+                Button button = (Button)mView.findViewById(R.id.buttonEnviar);
+                button.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(isEmailValid(email)){
+                            /*
+                            if(si el email esta en la DDBB) {
+                                Toast.makeText(LoginActivity.this, R.string.Email_correct, Toast.LENGTH_SHORT).show();
+                            }else {
+                                Toast.makeText(LoginActivity.this, R.string.Email_incorrect, Toast.LENGTH_SHORT).show();
+                            }
+                            */
+                        }
+                    }
+                });
+
+                mBuilder.setView(mView);
+                AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
             }
         });
 

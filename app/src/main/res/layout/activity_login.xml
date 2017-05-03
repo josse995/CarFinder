@@ -82,6 +82,15 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/forgetPasswordTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/forgetPassword"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:onClick="forgetPassword"/>
+
+            <TextView
                 android:id="@+id/mensaje_registro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
