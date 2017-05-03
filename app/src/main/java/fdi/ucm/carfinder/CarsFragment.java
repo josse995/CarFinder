@@ -1,14 +1,27 @@
 package fdi.ucm.carfinder;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import fdi.ucm.carfinder.connection.Coches;
+import fdi.ucm.carfinder.connection.Usuarios;
 
 
 /**
@@ -24,6 +37,7 @@ public class CarsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private CarsTask mAuthTask = null;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -77,7 +91,27 @@ public class CarsFragment extends Fragment {
             }
         });
 
+        SharedPreferences sp = this.getContext().getSharedPreferences("Login",0);
+        String user = sp.getString("User", null);
+
+        mAuthTask = new CarsTask(user, getContext());
+        mAuthTask.execute((Void) null);
+
         return view;
+    }
+
+    public void init(JSONObject datos){
+        TableLayout ll = (TableLayout) getView().findViewById(R.id.table_cars);
+
+        for (int i = 0; i <2; i++) {
+
+            TableRow row= new TableRow(this.getContext());
+            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+            row.setLayoutParams(lp);
+            TextView qty = new TextView(this.getContext());
+            row.addView(qty);
+            ll.addView(row,i);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -117,5 +151,65 @@ public class CarsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    /**
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
+    private class CarsTask extends AsyncTask<Void, Void, Boolean> {
+
+
+        private final String mEmail;
+        private final Context contexto;
+        private String msgError;
+        private JSONObject datos;
+
+        CarsTask(String email, Context cont) {
+            mEmail = email;
+            contexto = cont;
+            msgError = "";
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
+
+            Coches conexion = new Coches();
+            JSONObject resultado = conexion.cargarCoches(mEmail, "0");
+            try {
+                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                    msgError = resultado.get("errorMessage").toString();
+                    return false;
+                }
+                else {
+                    datos = resultado;
+                    //Crear actividad del menú principal
+
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mAuthTask = null;
+            if (success) {
+                init(datos);
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+                builder.setMessage(msgError).setTitle("Error");
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+        }
     }
 }

@@ -16,8 +16,8 @@ public class Coches extends Conexion {
         return this.ejecutar(datos, this.coches);
     }
 
-    public JSONObject cargarCoches(String email) {
-        final String datos = "action=leerCoches&email="+email;
+    public JSONObject cargarCoches(String email, String matr) {
+        final String datos = "action=leer&email="+email+"&matricula="+matr;
 
         return this.ejecutar(datos, this.coches);
     }

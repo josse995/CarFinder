@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
@@ -87,8 +88,6 @@ public class RegisterActivity extends AppCompatActivity {
                 pass1 = pass1TextField.getText().toString();
                 pass2 = pass2TextField.getText().toString();
                 registro(name, lastname, email,date, pass1, pass2);
-
-
             }
         });
     }
@@ -128,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void establecerFecha(EditText editText) {
         //Obtengo la fecha de hoy
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
 
         editText.setText(formattedDate, TextView.BufferType.EDITABLE);
@@ -296,11 +295,6 @@ public class RegisterActivity extends AppCompatActivity {
                     msgError = resultado.get("errorMessage").toString();
                     return false;
                 } else {
-                    msgError = "Cuenta creada con éxito!\nInicie sesión";
-                    AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
-                    builder.setMessage(msgError);
-                    AlertDialog alert = builder.create();
-                    alert.show();
                     return true;
                 }
             } catch (JSONException e) {
@@ -315,7 +309,17 @@ public class RegisterActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                finish();
+                msgError = "Cuenta creada con éxito!\nInicie sesión";
+                AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+                builder.setMessage(msgError);
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
                 builder.setMessage(msgError).setTitle("Error");
