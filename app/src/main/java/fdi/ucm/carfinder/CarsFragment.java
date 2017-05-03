@@ -3,6 +3,7 @@ package fdi.ucm.carfinder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,12 +14,17 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import fdi.ucm.carfinder.connection.Coches;
 import fdi.ucm.carfinder.connection.Usuarios;
@@ -100,17 +106,28 @@ public class CarsFragment extends Fragment {
         return view;
     }
 
-    public void init(JSONObject datos){
+    public void init(JSONObject datos) throws JSONException{
         TableLayout ll = (TableLayout) getView().findViewById(R.id.table_cars);
 
-        for (int i = 0; i <2; i++) {
+        JSONArray coches = datos.getJSONArray("coches");
+
+        for (int i = 0; i < coches.length(); i++) {
 
             TableRow row= new TableRow(this.getContext());
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
+            row.setBackgroundResource(R.drawable.border);
+            lp.setMargins(100, 70, 0, 0);
             row.setLayoutParams(lp);
-            TextView qty = new TextView(this.getContext());
-            row.addView(qty);
-            ll.addView(row,i);
+            TextView texto = new TextView(this.getContext());
+            JSONObject coche = coches.getJSONObject(i);
+            String test = coche.getString("marca") + " " + coche.getString("modelo") +" - " +
+                    coche.getString("matricula");
+            texto.setText(test);
+            texto.setHeight(125);
+            texto.setWidth(600);
+            texto.setTextColor(Color.WHITE);
+            row.addView(texto, lp);
+            ll.addView(row);
         }
     }
 
@@ -198,7 +215,11 @@ public class CarsFragment extends Fragment {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             if (success) {
-                init(datos);
+                try {
+                    init(datos);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
                 builder.setMessage(msgError).setTitle("Error");
