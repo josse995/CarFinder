@@ -55,6 +55,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="50dp"
                 android:layout_toRightOf="@id/imageLogoLogin"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1" />
@@ -68,6 +70,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="20dp"
                 android:layout_toRightOf="@id/imageLogoLogin"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
                 android:hint="@string/prompt_password"
                 android:imeActionId="@+id/login"
                 android:imeActionLabel="@string/action_sign_in_short"
@@ -96,6 +100,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_toRightOf="@id/imageLogoLogin"
+                android:textColor="#FFFFFF"
                 android:text="@string/message_register"
                 android:textAlignment="center" />
 

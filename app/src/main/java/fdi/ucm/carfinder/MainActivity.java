@@ -2,6 +2,8 @@ package fdi.ucm.carfinder;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,7 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnFragmentInteractionListener,
+        CarsFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +29,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -89,12 +83,24 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.inicio) {
             // Handle the camera action
         } else if (id == R.id.coches) {
-
+            select = true;
+            fragment = new CarsFragment();
+            this.setTitle(getString(R.string.title_cars));
         } else if (id == R.id.ajustes) {
             select = true;
             fragment = new SettingsFragment();
+            this.setTitle(getString(R.string.title_settings));
         } else if (id == R.id.cerrarSesion) {
+            SharedPreferences sp=getSharedPreferences("Login", 0);
+            SharedPreferences.Editor Ed=sp.edit();
+            Ed.remove("User");
+            Ed.remove("Pass");
+            Ed.commit();
 
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+
+            this.finish();
         }
 
         if (select) {
