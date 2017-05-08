@@ -57,6 +57,9 @@
     <!-- String related to CarsFragment -->
     <string name="title_cars">Mis coches</string>
     <string name="my_cars_message">Mis coches</string>
+    <string name="matricula">Matrícula</string>
+    <string name="Brand">Marca</string>
+    <string name="Model">Modelo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

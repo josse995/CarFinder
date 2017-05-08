@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -25,9 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 import fdi.ucm.carfinder.connection.Coches;
+import fdi.ucm.carfinder.connection.Conexion;
 import fdi.ucm.carfinder.connection.Usuarios;
+
+import static fdi.ucm.carfinder.R.id.email;
 
 
 /**
@@ -83,24 +90,47 @@ public class CarsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cars, container, false);
+
+        SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
+        final String user = sp.getString("User", null);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addCar);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                View mView = inflater.inflate(R.layout.popup_coches, container, false);
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+
+                EditText mBrand = (EditText)getView().findViewById(R.id.new_car_brand);
+                EditText mModel = (EditText)getView().findViewById(R.id.new_car_model);
+                EditText mMatr = (EditText)getView().findViewById(R.id.new_car_matr);
+
+                final String brand = mBrand.getText().toString();
+                final String model = mModel.getText().toString();
+                final String matr = mMatr.getText().toString();
+
+
+
+                Button button = (Button)mView.findViewById(R.id.button_new_car);
+                button.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        mAuthTask = new CarsTask(user, getContext(), 1, brand, model, matr);
+                        mAuthTask.execute((Void) null);
+                    }
+                });
+
+                mBuilder.setView(mView);
+                AlertDialog dialog = mBuilder.create();
+                dialog.show();
             }
         });
 
-        SharedPreferences sp = this.getContext().getSharedPreferences("Login",0);
-        String user = sp.getString("User", null);
-
-        mAuthTask = new CarsTask(user, getContext());
+        mAuthTask = new CarsTask(user, getContext(), 0, null, null, null);
         mAuthTask.execute((Void) null);
 
         return view;
@@ -176,39 +206,64 @@ public class CarsFragment extends Fragment {
      */
     private class CarsTask extends AsyncTask<Void, Void, Boolean> {
 
-
+        private int opcion;
         private final String mEmail;
         private final Context contexto;
         private String msgError;
         private JSONObject datos;
+        private String brand;
+        private String model;
+        private String matr;
 
-        CarsTask(String email, Context cont) {
+        CarsTask(String email, Context cont, int opcion, String brand, String model, String matr) {
             mEmail = email;
             contexto = cont;
             msgError = "";
+            this.opcion = opcion;
+            this.brand = brand;
+            this.model = model;
+            this.matr = matr;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+            if(opcion == 0) {
+                Coches conexion = new Coches();
+                JSONObject resultado = conexion.cargarCoches(mEmail, "0");
+                try {
+                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                        msgError = resultado.get("errorMessage").toString();
+                        return false;
+                    } else {
+                        datos = resultado;
+                        //Crear actividad del menú principal
 
-            Coches conexion = new Coches();
-            JSONObject resultado = conexion.cargarCoches(mEmail, "0");
-            try {
-                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                    msgError = resultado.get("errorMessage").toString();
+                        return true;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                     return false;
                 }
-                else {
-                    datos = resultado;
-                    //Crear actividad del menú principal
-
-                    return true;
+            }else if (opcion == 1){
+                Coches conexion = new Coches();
+                JSONObject resultado = conexion.insertarCoche(matr, brand, model, mEmail);
+                try {
+                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                        msgError = resultado.get("errorMessage").toString();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            }else if (opcion == 2){
+                //TODO
                 return false;
             }
+            return false;
         }
 
         @Override
