@@ -91,39 +91,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-        final TextView forgetPassword = (TextView)findViewById(R.id.forgetPasswordTextField);
-        forgetPassword.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(LoginActivity.this);
-                View mView = getLayoutInflater().inflate(R.layout.popup_forget_password, null);
-
-                EditText mEmail = (EditText)mView.findViewById(R.id.email_forget_password);
-                final String email = mEmail.getText().toString();
-                Button button = (Button)mView.findViewById(R.id.buttonEnviar);
-                button.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isEmailValid(email)){
-                            /*
-                            if(si el email esta en la DDBB) {
-                                Toast.makeText(LoginActivity.this, R.string.Email_correct, Toast.LENGTH_SHORT).show();
-                            }else {
-                                Toast.makeText(LoginActivity.this, R.string.Email_incorrect, Toast.LENGTH_SHORT).show();
-                            }
-                            */
-                        }
-                    }
-                });
-
-                mBuilder.setView(mView);
-                AlertDialog dialog = mBuilder.create();
-                dialog.show();
-
-            }
-        });
-
         Button mRegisterButton = (Button) findViewById(R.id.button_register);
         mRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
