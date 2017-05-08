@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_main"
     tools:context="fdi.ucm.carfinder.MainFragment"
     android:background="@color/colorPrimaryDark">
@@ -15,10 +16,12 @@
         android:layout_marginBottom="222dp" />
 
     <TableLayout
+        android:id="@+id/table_cars_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/web_view_map"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="288dp"/>
+
 </RelativeLayout>

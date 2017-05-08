@@ -21,7 +21,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnFragmentInteractionListener,
-        CarsFragment.OnFragmentInteractionListener{
+        CarsFragment.OnFragmentInteractionListener, MainFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         this.setTitle("Inicio");
+        Fragment fragment = new MainFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
     }
 
     @Override
@@ -82,8 +84,8 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         Boolean select = false;
         if (id == R.id.inicio) {
-            // Handle the camera action
-
+            select = true;
+            fragment = new MainFragment();
             this.setTitle("Inicio");
         } else if (id == R.id.coches) {
             select = true;
@@ -107,11 +109,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (select) {
-            /*FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_settings, fragment);
-            fragmentTransaction.replace(R.id.contenedor,fragment);
-            fragmentTransaction.commit();*/
             getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
         }
 

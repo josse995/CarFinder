@@ -102,23 +102,20 @@ public class CarsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View mView = inflater.inflate(R.layout.popup_coches, container, false);
+                final View mView = inflater.inflate(R.layout.popup_coches, container, false);
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-
-                EditText mBrand = (EditText)getView().findViewById(R.id.new_car_brand);
-                EditText mModel = (EditText)getView().findViewById(R.id.new_car_model);
-                EditText mMatr = (EditText)getView().findViewById(R.id.new_car_matr);
-
-                final String brand = mBrand.getText().toString();
-                final String model = mModel.getText().toString();
-                final String matr = mMatr.getText().toString();
-
-
 
                 Button button = (Button)mView.findViewById(R.id.button_new_car);
                 button.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
+                        EditText mBrand = (EditText)mView.findViewById(R.id.new_car_brand);
+                        EditText mModel = (EditText)mView.findViewById(R.id.new_car_model);
+                        EditText mMatr = (EditText)mView.findViewById(R.id.new_car_matr);
+                        String brand = mBrand.getText().toString();
+                        String model = mModel.getText().toString();
+                        String matr = mMatr.getText().toString();
+
                         mAuthTask = new CarsTask(user, getContext(), 1, brand, model, matr);
                         mAuthTask.execute((Void) null);
                     }
@@ -270,10 +267,14 @@ public class CarsFragment extends Fragment {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             if (success) {
-                try {
-                    init(datos);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (opcion == 0) {
+                    try {
+                        init(datos);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else if (opcion == 1){
+
                 }
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(contexto);

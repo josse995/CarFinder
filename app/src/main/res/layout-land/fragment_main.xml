@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <WebView
+        android:id="@+id/web_view_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="200dp"
+        />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="390dp"
+        android:layout_alignParentLeft="true"/>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_addPosition"
+        android:layout_below="@+id/table_cars_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/table_cars"
+        android:layout_marginTop="-60dp"
+        android:layout_marginLeft="300dp"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
 </RelativeLayout>
