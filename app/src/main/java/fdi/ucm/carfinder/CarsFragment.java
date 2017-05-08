@@ -15,9 +15,12 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -28,11 +31,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.Inflater;
 
 import fdi.ucm.carfinder.connection.Coches;
 import fdi.ucm.carfinder.connection.Conexion;
 import fdi.ucm.carfinder.connection.Usuarios;
+import fdi.ucm.carfinder.modelo.Coche;
 
 import static fdi.ucm.carfinder.R.id.email;
 
@@ -57,6 +62,8 @@ public class CarsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private ArrayList<Coche> coches;
 
     public CarsFragment() {
         // Required empty public constructor
@@ -134,28 +141,36 @@ public class CarsFragment extends Fragment {
     }
 
     public void init(JSONObject datos) throws JSONException{
-        TableLayout ll = (TableLayout) getView().findViewById(R.id.table_cars);
+        ListView ll = (ListView) getView().findViewById(R.id.table_cars);
+        this.coches = new ArrayList<>();
 
         JSONArray coches = datos.getJSONArray("coches");
 
         for (int i = 0; i < coches.length(); i++) {
 
-            TableRow row= new TableRow(this.getContext());
+            JSONObject coche = coches.getJSONObject(i);
+            Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
+                    coche.getString("modelo"));
+            this.coches.add(aux);
+
+            // instantiate the custom list adapter
+
+            /*TableRow row= new TableRow(this.getContext());
             TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
             row.setBackgroundResource(R.drawable.border);
             lp.setMargins(100, 70, 0, 0);
-            row.setLayoutParams(lp);
+            row.setLayoutParams(lp);*/
             TextView texto = new TextView(this.getContext());
-            JSONObject coche = coches.getJSONObject(i);
             String test = coche.getString("marca") + " " + coche.getString("modelo") +" - " +
                     coche.getString("matricula");
             texto.setText(test);
-            texto.setHeight(125);
+            /*texto.setHeight(125);
             texto.setWidth(600);
-            texto.setTextColor(Color.WHITE);
-            row.addView(texto, lp);
-            ll.addView(row);
+            texto.setTextColor(Color.WHITE);*/
+            //row.addView(texto, lp);
         }
+        CustomListAdapter adapter = new CustomListAdapter(getContext(), this.coches);
+        ll.setAdapter(adapter);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -287,6 +302,59 @@ public class CarsFragment extends Fragment {
         @Override
         protected void onCancelled() {
             mAuthTask = null;
+        }
+
+
+    }
+
+    public class CustomListAdapter extends BaseAdapter {
+        private Context context; //context
+        private ArrayList<Coche> items; //data source of the list adapter
+
+        //public constructor
+        public CustomListAdapter(Context context, ArrayList<Coche> items) {
+            this.context = context;
+            this.items = items;
+        }
+
+        @Override
+        public int getCount() {
+            return items.size(); //returns total of items in the list
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return items.get(position); //returns list item at the specified position
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // inflate the layout for each list row
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).
+                        inflate(R.layout.fragment_cars, parent, false);
+            }
+
+            // get current item to be displayed
+            Coche currentItem = (Coche) getItem(position);
+
+            // get the TextView for item name and item description
+            /*TextView textViewItemName = (TextView)
+                    convertView.findViewById(R.id.text_view_item_name);
+            TextView textViewItemDescription = (TextView)
+                    convertView.findViewById(R.id.text_view_item_description);
+
+            //sets the text for item name and item description from the current item object
+            textViewItemName.setText(currentItem.getItemName());
+            textViewItemDescription.setText(currentItem.getItemDescription());*/
+
+            // returns the view for the current row
+            return convertView;
         }
     }
 }

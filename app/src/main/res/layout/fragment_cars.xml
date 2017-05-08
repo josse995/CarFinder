@@ -27,15 +27,16 @@
                 android:textColor="#FFFFFF"
                 android:text="@string/my_cars_message"/>
 
-            <TableLayout
+            <ListView
                 android:id="@+id/table_cars"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/mycars_message"
                 android:layout_marginTop="10dp"
+                android:background="#FFFFFF"
                 android:layout_alignParentEnd="true">
 
-            </TableLayout>
+            </ListView>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_addCar"
