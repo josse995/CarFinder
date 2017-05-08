@@ -1,48 +1,33 @@
 package fdi.ucm.carfinder;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
 
 import fdi.ucm.carfinder.connection.Coches;
-import fdi.ucm.carfinder.connection.Conexion;
-import fdi.ucm.carfinder.connection.Usuarios;
 import fdi.ucm.carfinder.modelo.Coche;
-
-import static fdi.ucm.carfinder.R.id.email;
 
 
 /**
@@ -54,33 +39,25 @@ import static fdi.ucm.carfinder.R.id.email;
  * create an instance of this fragment.
  */
 public class CarsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private CarsTask mAuthTask = null;
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     private ArrayList<Coche> coches;
+    private CustomListAdapter adapter;
+    private int lastSelected;
+    private View mView;
 
     public CarsFragment() {
         // Required empty public constructor
+        lastSelected = -1;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CarsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CarsFragment newInstance(String param1, String param2) {
         CarsFragment fragment = new CarsFragment();
         Bundle args = new Bundle();
@@ -108,68 +85,196 @@ public class CarsFragment extends Fragment {
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
 
-
-
-
         //Esto te abre el popup para añadir un coche
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addCar);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final View mView = inflater.inflate(R.layout.popup_coches, container, false);
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-
-                Button button = (Button)mView.findViewById(R.id.button_new_car);
-                button.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        EditText mBrand = (EditText)mView.findViewById(R.id.new_car_brand);
-                        EditText mModel = (EditText)mView.findViewById(R.id.new_car_model);
-                        EditText mMatr = (EditText)mView.findViewById(R.id.new_car_matr);
-                        String brand = mBrand.getText().toString();
-                        String model = mModel.getText().toString();
-                        String matr = mMatr.getText().toString();
-
-                        mAuthTask = new CarsTask(user, getContext(), 1, brand, model, matr);
-                        mAuthTask.execute((Void) null);
-                    }
-                });
-
-                mBuilder.setView(mView);
-                AlertDialog dialog = mBuilder.create();
-                dialog.show();
+                mView = inflater.inflate(R.layout.popup_coches, container, false);
+                addListener(mView);
             }
         });
 
-        mAuthTask = new CarsTask(user, getContext(), 0, null, null, null);
+        mAuthTask = new CarsTask(user, getContext(), 0, null, null, null, null);
         mAuthTask.execute((Void) null);
 
         return view;
     }
 
-    public void init(JSONObject datos) throws JSONException{
+    private void addListener(View view) {
+        SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
+        final String user = sp.getString("User", null);
+
+        final View mView = view;
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        Button button = (Button)mView.findViewById(R.id.button_new_car);
+        button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                EditText mBrand = (EditText)mView.findViewById(R.id.new_car_brand);
+                EditText mModel = (EditText)mView.findViewById(R.id.new_car_model);
+                EditText mMatr = (EditText)mView.findViewById(R.id.new_car_matr);
+                String brand = mBrand.getText().toString();
+                String model = mModel.getText().toString();
+                String matr = mMatr.getText().toString();
+
+                mAuthTask = new CarsTask(user, getContext(), 1, brand, model, matr, dialog);
+                mAuthTask.execute((Void) null);
+            }
+        });
+    }
+
+    private void init(JSONObject datos) throws JSONException{
         ListView ll = (ListView) getView().findViewById(R.id.table_cars);
         this.coches = new ArrayList<>();
 
-        JSONArray coches = datos.getJSONArray("coches");
+        final JSONArray cochesServidor = datos.getJSONArray("coches");
 
+        for (int i = 0; i < cochesServidor.length(); i++) {
 
-
-        for (int i = 0; i < coches.length(); i++) {
-
-            JSONObject coche = coches.getJSONObject(i);
+            JSONObject coche = cochesServidor.getJSONObject(i);
 
             //COGEMOS UN COCHE
             Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
                     coche.getString("modelo"));
             this.coches.add(aux);
 
-            // instantiate the custom list adapter
-
-
         }
-        CustomListAdapter adapter = new CustomListAdapter(getContext(), this.coches);
+
+        adapter = new CustomListAdapter(getContext(), this.coches);
         ll.setAdapter(adapter);
+
+        int totalHeight = 0;
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, ll);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams par = ll.getLayoutParams();
+        par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
+        ll.setLayoutParams(par);
+        ll.requestLayout();
+
+        ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+                rowListener(position, view);
+            }
+        });
+
+    }
+
+    private void agregarCocheTabla(String matricula, String marca, String modelo) {
+        ListView ll = (ListView) getView().findViewById(R.id.table_cars);
+        Coche aux = new Coche(matricula, marca, modelo);
+        this.coches.add(aux);
+
+        adapter.notifyDataSetChanged();
+
+        int totalHeight = 0;
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, ll);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams par = ll.getLayoutParams();
+        par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
+        ll.setLayoutParams(par);
+        ll.requestLayout();
+
+        ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+                rowListener(position, view);
+            }
+        });
+    }
+
+    private void eliminarCocheTabla() {
+        ListView ll = (ListView) getView().findViewById(R.id.table_cars);
+        this.coches.remove(lastSelected);
+        lastSelected = -1;
+
+        adapter.notifyDataSetChanged();
+
+        int totalHeight = 0;
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, ll);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams par = ll.getLayoutParams();
+        par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
+        ll.setLayoutParams(par);
+        ll.requestLayout();
+    }
+
+    private void rowListener(int position, View view) {
+        for(int i = 0; i < coches.size(); i++) {
+            coches.get(i).setSelected(false);
+        }
+
+        if (lastSelected != position) {
+            lastSelected = position;
+            coches.get(position).setSelected(true);
+            adapter.notifyDataSetChanged();
+            view.setSelected(true);
+            final FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);
+            fb.setImageResource(R.drawable.ic_delete);
+            fb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage(R.string.Delete_car_message).setTitle("Aviso");
+                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Coche temp = coches.get(lastSelected);
+
+                            SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
+                            final String user = sp.getString("User", null);
+
+                            mAuthTask = new CarsTask(user, getContext(), 2, null, null, temp.getMatricula(), null);
+                            mAuthTask.execute((Void) null);
+                            fb.setImageResource(R.drawable.ic_add_black_24dp);
+                            fb.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    addListener(mView);
+                                }
+                            });
+                            dialog.dismiss();
+                        } });
+
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        } });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            });
+        }
+        else {
+            lastSelected = -1;
+            adapter.notifyDataSetChanged();
+            FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);
+            fb.setImageResource(R.drawable.ic_add_black_24dp);
+            fb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addListener(mView);
+                }
+            });
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -225,8 +330,9 @@ public class CarsFragment extends Fragment {
         private String brand;
         private String model;
         private String matr;
+        private AlertDialog alertAbierto;
 
-        CarsTask(String email, Context cont, int opcion, String brand, String model, String matr) {
+        CarsTask(String email, Context cont, int opcion, String brand, String model, String matr, AlertDialog alerta) {
             mEmail = email;
             contexto = cont;
             msgError = "";
@@ -234,6 +340,7 @@ public class CarsFragment extends Fragment {
             this.brand = brand;
             this.model = model;
             this.matr = matr;
+            this.alertAbierto = alerta;
         }
 
         @Override
@@ -271,8 +378,19 @@ public class CarsFragment extends Fragment {
                     return false;
                 }
             }else if (opcion == 2){
-                //TODO
-                return false;
+                Coches conexion = new Coches();
+                JSONObject resultado = conexion.eliminarCoche(matr, mEmail);
+                try {
+                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                        msgError = resultado.get("errorMessage").toString();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
             return false;
         }
@@ -288,7 +406,10 @@ public class CarsFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else if (opcion == 1){
-
+                    alertAbierto.dismiss();
+                    agregarCocheTabla(matr, brand, model);
+                } else if (opcion == 2){
+                    eliminarCocheTabla();
                 }
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
@@ -310,6 +431,7 @@ public class CarsFragment extends Fragment {
         private Context context; //context
         private static ArrayList<Coche> items; //data source of the list adapter
         private LayoutInflater mInflater;
+
 
         //public constructor
         public CustomListAdapter(Context context, ArrayList<Coche> items) {
@@ -342,7 +464,7 @@ public class CarsFragment extends Fragment {
 
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = inflater.inflate(R.layout.prueba, parent, false);
+                v = inflater.inflate(R.layout.car_rows, parent, false);
             }
 
 
@@ -372,6 +494,12 @@ public class CarsFragment extends Fragment {
             model.setText(currentItem.getModelo()+"\t");
             matr.setText(currentItem.getMatricula());
 
+
+            if (items.get(position).getSelected()) {
+                v.setBackgroundColor(Color.parseColor("#36cf48"));
+            }else{
+                v.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
 
             /*prueba2
             holder.brand.setText(currentItem.getMarca());

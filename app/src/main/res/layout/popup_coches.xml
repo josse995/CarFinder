@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/background_light"
     android:id="@+id/popup_coches"
     android:weightSum="1">
+
+    <ImageView
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        app:srcCompat="@drawable/logo"/>
 
     <EditText
         android:id="@+id/new_car_brand"
@@ -45,6 +53,7 @@
         android:layout_below="@+id/new_car_matr"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="29dp"
+        android:layout_marginBottom="20dp"
         android:text="Ok" />
 </RelativeLayout>
 

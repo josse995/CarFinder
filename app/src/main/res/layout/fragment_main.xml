@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="222dp" />
+        android:layout_marginBottom="160dp" />
 
     <ListView
         android:id="@+id/table_cars_main"
@@ -23,7 +23,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:background="#FFFFFF"
-        android:layout_marginTop="288dp"/>
+        android:layout_marginTop="350dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fb_addLocation"

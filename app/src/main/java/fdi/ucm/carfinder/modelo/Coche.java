@@ -8,12 +8,14 @@ public class Coche {
     private String matricula;
     private String marca;
     private String modelo;
+    private Boolean isSelected;
 
 
     public Coche(String matricula, String marca, String modelo) {
         this.matricula = matricula;
         this.marca = marca;
         this.modelo = modelo;
+        this.isSelected = false;
     }
 
 
@@ -39,5 +41,13 @@ public class Coche {
 
     public void setModelo(String modelo) {
         this.modelo = modelo;
+    }
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
     }
 }
