@@ -46,6 +46,7 @@
     <string name="cars">Coches</string>
     <string name="options">Ajustes</string>
     <string name="logoff">Cerrar Sesión</string>
+    <string name="permission_error">No se puede utilizar esta app sin otorgar permisos de uso de localización.</string>
 
     <!-- String related to SettingsFragment -->
     <string name="title_settings">Ajustes</string>

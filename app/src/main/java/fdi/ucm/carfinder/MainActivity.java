@@ -1,14 +1,22 @@
 package fdi.ucm.carfinder;
 
+import android.Manifest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.test.mock.MockPackageManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +30,9 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnFragmentInteractionListener,
         CarsFragment.OnFragmentInteractionListener, MainFragment.OnFragmentInteractionListener{
+
+    private static final int REQUEST_GPS = 2;
+    String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +50,24 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         this.setTitle("Inicio");
-        Fragment fragment = new MainFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_GPS);
+
+            }
+            else {
+                Fragment fragment = new MainFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+            }
+        }
+        else {
+            Fragment fragment = new MainFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+        }
+
     }
 
     @Override
@@ -73,6 +100,34 @@ public class MainActivity extends AppCompatActivity
         }*/
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_GPS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Fragment fragment = new MainFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+            }else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.permission_error)
+                        .setTitle("Error");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences sp=getSharedPreferences("Login", 0);
+                        SharedPreferences.Editor Ed=sp.edit();
+                        Ed.remove("User");
+                        Ed.remove("Pass");
+                        Ed.commit();
+
+                        System.exit(0);
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
