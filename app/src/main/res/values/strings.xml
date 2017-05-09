@@ -5,6 +5,7 @@
 
     <string name="ok">Aceptar</string>
     <string name="cancel">Cancelar</string>
+    <string name="back_exit">Pulsa de nuevo ATRAS para salir</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

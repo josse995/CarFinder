@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.design.widget.NavigationView;
@@ -18,13 +19,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SettingsFragment.OnFragmentInteractionListener,
         CarsFragment.OnFragmentInteractionListener, MainFragment.OnFragmentInteractionListener{
 
     private static final int REQUEST_GPS = 2;
-    String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +66,29 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = new MainFragment();
-        this.setTitle("Inicio");
-        getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.contenedor);
+
+        if (fragment instanceof MainFragment) {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, R.string.back_exit, Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce=false;
+                }
+            }, 2000);
+        } else {
+            fragment = new MainFragment();
+            this.setTitle("Inicio");
+            getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+        }
     }
 
     @Override
@@ -110,7 +132,7 @@ public class MainActivity extends AppCompatActivity
                         Ed.remove("Pass");
                         Ed.commit();
 
-                        System.exit(0);
+                        finish();
                     }
                 });
                 AlertDialog alert = builder.create();
