@@ -113,12 +113,26 @@ public class MainFragment extends MapMainFragment {
 
             if(!posicionesCoches.isEmpty()) {
                 if (position < posicionesCoches.size()) {
-                    Double lat = Double.parseDouble(posicionesCoches.get(position).getLatitud());
-                    Double lon = Double.parseDouble(posicionesCoches.get(position).getLongitud());
-                    cargarWeb(view, lat, lon, temp.getMatricula());
-
+                    if (coches.get(position).getMatricula().equals(posicionesCoches.get(position).getMatricula())) {
+                        Double lat = Double.parseDouble(posicionesCoches.get(position).getLatitud());
+                        Double lon = Double.parseDouble(posicionesCoches.get(position).getLongitud());
+                        cargarWeb(view, lat, lon, temp.getMatricula());
+                    }
                 } else {
-                    cargarWeb(view, super.latitude, super.longitude, null);
+                    int i = 0;
+                    Boolean encontrado = false;
+                    while (i < posicionesCoches.size() && !encontrado) {
+                        if (coches.get(position).getMatricula().equals(posicionesCoches.get(i).getMatricula()))
+                            encontrado = true;
+                        else
+                            ++i;
+                    }
+                    if (encontrado) {
+                        Double lat = Double.parseDouble(posicionesCoches.get(i).getLatitud());
+                        Double lon = Double.parseDouble(posicionesCoches.get(i).getLongitud());
+                        cargarWeb(view, lat, lon, temp.getMatricula());
+                    } else
+                        cargarWeb(view, super.latitude, super.longitude, null);
                 }
             }
             /*final FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);

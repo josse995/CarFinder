@@ -305,8 +305,8 @@ public class MapMainFragment extends Fragment implements LocationListener {
                             Posiciones temp = new Posiciones();
                             temp.setMatricula(posicion.getString("matricula"));
                             JSONArray coordenadas = (JSONArray) posicion.get("coordenadas");
-                            temp.setLatitud(coordenadas.getJSONObject(0).getString("latitud"));
-                            temp.setLongitud(coordenadas.getJSONObject(0).getString("longitud"));
+                            temp.setLatitud(coordenadas.getJSONObject(i).getString("latitud"));
+                            temp.setLongitud(coordenadas.getJSONObject(i).getString("longitud"));
                             posicionesCoches.add(temp);
                         }
 
