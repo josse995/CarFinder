@@ -81,6 +81,7 @@ public class CarsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cars, container, false);
+        mView = inflater.inflate(R.layout.popup_coches, container, false);
 
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
@@ -90,8 +91,7 @@ public class CarsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mView = inflater.inflate(R.layout.popup_coches, container, false);
-                addListener(mView);
+                addListener();
             }
         });
 
@@ -101,11 +101,11 @@ public class CarsFragment extends Fragment {
         return view;
     }
 
-    private void addListener(View view) {
+    private void addListener() {
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
 
-        final View mView = view;
+        //final View mView = view;
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
@@ -248,7 +248,7 @@ public class CarsFragment extends Fragment {
                             fb.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    addListener(mView);
+                                    addListener();
                                 }
                             });
                             dialog.dismiss();
@@ -271,7 +271,7 @@ public class CarsFragment extends Fragment {
             fb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    addListener(mView);
+                    addListener();
                 }
             });
         }
