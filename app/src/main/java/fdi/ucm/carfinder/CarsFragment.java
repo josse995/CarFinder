@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -494,9 +495,13 @@ public class CarsFragment extends Fragment {
 
 
             if (items.get(position).getSelected()) {
-                v.setBackgroundColor(Color.parseColor("#36cf48"));
+                ImageView image = (ImageView) v.findViewById(R.id.check);
+                image.setVisibility(View.VISIBLE);
+                //v.setBackgroundColor(Color.parseColor("#36cf48"));
             }else{
-                v.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                ImageView image = (ImageView) v.findViewById(R.id.check);
+                image.setVisibility(View.GONE);
+                //v.setBackgroundColor(Color.parseColor("#FFFFFF"));
             }
 
             /*prueba2
