@@ -355,8 +355,6 @@ public class CarsFragment extends Fragment {
                         return false;
                     } else {
                         datos = resultado;
-                        //Crear actividad del menú principal
-
                         return true;
                     }
                 } catch (JSONException e) {

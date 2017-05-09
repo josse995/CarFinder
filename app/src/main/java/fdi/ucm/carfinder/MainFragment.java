@@ -1,210 +1,280 @@
 package fdi.ucm.carfinder;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.Uri;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class MainFragment extends Fragment implements LocationListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;
+import java.util.ArrayList;
 
-    private WebView webView;
+import fdi.ucm.carfinder.connection.Coches;
+import fdi.ucm.carfinder.modelo.Coche;
 
-    double latitude; // latitude
-    double longitude; // longitude
-    private boolean gps_enabled = false;
-    private boolean network_enabled = false;
+/**
+ * Created by Mauri on 09/05/2017.
+ */
 
-    private OnFragmentInteractionListener mListener;
-    private LocationManager mLocationManager;
+public class MainFragment extends MapMainFragment {
+
+    private ArrayList<Coche> coches;
+    private CarsFragment.CustomListAdapter adapter;
+    private int lastSelected;
+    private CarsTask mAuthTask = null;
 
 
     public MainFragment() {
-    }
-
-
-    public static MainFragment newInstance(String param1, String param2) {
-        MainFragment fragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        super();
+        lastSelected = -1;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-        gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        Location net_loc = null, gps_loc = null, finalLoc = null;
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        if (gps_enabled)
-            gps_loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (network_enabled)
-            net_loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        if (gps_loc != null && net_loc != null) {
-
-            //smaller the number more accurate result will
-            if (gps_loc.getAccuracy() > net_loc.getAccuracy())
-                finalLoc = net_loc;
-            else
-                finalLoc = gps_loc;
-
-            // I used this just to get an idea (if both avail, its upto you which you want to take as I've taken location with more accuracy)
-
-        } else {
-
-            if (gps_loc != null) {
-                finalLoc = gps_loc;
-            } else if (net_loc != null) {
-                finalLoc = net_loc;
-            }
-        }
-        if (finalLoc != null) {
-            latitude = finalLoc.getLatitude();
-            longitude = finalLoc.getLongitude();
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        this.cargarWeb(view);
+        mPositionTask = new MapLocationTask(super.email, getContext());
+        mPositionTask.execute((Void) null);
+
+        mAuthTask = new CarsTask(super.email, getContext(), 0, null, null, null, null);
+        mAuthTask.execute((Void) null);
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private void init(JSONObject datos) throws JSONException {
+        ListView ll = (ListView) getView().findViewById(R.id.table_cars_main);
+        this.coches = new ArrayList<>();
+
+        final JSONArray cochesServidor = datos.getJSONArray("coches");
+
+        for (int i = 0; i < cochesServidor.length(); i++) {
+
+            JSONObject coche = cochesServidor.getJSONObject(i);
+
+            //COGEMOS UN COCHE
+            Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
+                    coche.getString("modelo"));
+            this.coches.add(aux);
+
+        }
+
+        adapter = new CarsFragment.CustomListAdapter(getContext(), this.coches);
+        ll.setAdapter(adapter);
+
+        int totalHeight = 0;
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, ll);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams par = ll.getLayoutParams();
+        par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
+        ll.setLayoutParams(par);
+        ll.requestLayout();
+
+        ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+                rowListener(position, view);
+            }
+        });
+
+    }
+
+    private void rowListener(int position, View view) {
+        for(int i = 0; i < coches.size(); i++) {
+            coches.get(i).setSelected(false);
+        }
+
+        if (lastSelected != position) {
+            lastSelected = position;
+            Coche temp = coches.get(position);
+            temp.setSelected(true);
+            adapter.notifyDataSetChanged();
+            view.setSelected(true);
+
+            if(!posicionesCoches.isEmpty()) {
+                if (position < posicionesCoches.size()) {
+                    Double lat = Double.parseDouble(posicionesCoches.get(position).getLatitud());
+                    Double lon = Double.parseDouble(posicionesCoches.get(position).getLongitud());
+                    cargarWeb(view, lat, lon, temp.getMatricula());
+
+                } else {
+                    cargarWeb(view, super.latitude, super.longitude, null);
+                }
+            }
+            /*final FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);
+            fb.setImageResource(R.drawable.ic_delete);
+            fb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage(R.string.Delete_car_message).setTitle("Aviso");
+                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Coche temp = coches.get(lastSelected);
+
+                            SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
+                            final String user = sp.getString("User", null);
+
+                            mAuthTask = new CarsTask(user, getContext(), 2, null, null, temp.getMatricula(), null);
+                            mAuthTask.execute((Void) null);
+                            /*fb.setImageResource(R.drawable.ic_add_black_24dp);
+                            fb.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    addListener();
+                                }
+                            });
+                            dialog.dismiss();
+                        } });
+
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        } });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            });*/
+        }
+        else {
+            lastSelected = -1;
+            adapter.notifyDataSetChanged();
+            cargarWeb(view, super.latitude, super.longitude, null);
+            /*FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);
+            fb.setImageResource(R.drawable.ic_add_black_24dp);
+            fb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addListener();
+                }
+            });*/
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+    private class CarsTask extends AsyncTask<Void, Void, Boolean> {
+
+        private int opcion;
+        private final String mEmail;
+        private final Context contexto;
+        private String msgError;
+        private JSONObject datos;
+        private String brand;
+        private String model;
+        private String matr;
+        private AlertDialog alertAbierto;
+
+        CarsTask(String email, Context cont, int opcion, String brand, String model, String matr, AlertDialog alerta) {
+        mEmail = email;
+        contexto = cont;
+        msgError = "";
+        this.opcion = opcion;
+        this.brand = brand;
+        this.model = model;
+        this.matr = matr;
+        this.alertAbierto = alerta;
+    }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+        // TODO: attempt authentication against a network service.
+        if(opcion == 0) {
+            Coches conexion = new Coches();
+            JSONObject resultado = conexion.cargarCoches(mEmail, "0");
+            try {
+                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                    msgError = resultado.get("errorMessage").toString();
+                    return false;
+                } else {
+                    datos = resultado;
+                    //Crear actividad del menú principal
+
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else if (opcion == 1){
+            Coches conexion = new Coches();
+            JSONObject resultado = conexion.insertarCoche(matr, brand, model, mEmail);
+            try {
+                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                    msgError = resultado.get("errorMessage").toString();
+                    return false;
+                } else {
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else if (opcion == 2){
+            Coches conexion = new Coches();
+            JSONObject resultado = conexion.eliminarCoche(matr, mEmail);
+            try {
+                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                    msgError = resultado.get("errorMessage").toString();
+                    return false;
+                } else {
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+        mAuthTask = null;
+        if (success) {
+            if (opcion == 0) {
+                try {
+                    init(datos);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if (opcion == 1){
+                alertAbierto.dismiss();
+                //agregarCocheTabla(matr, brand, model);
+            } else if (opcion == 2){
+                //eliminarCocheTabla();
+            }
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+            builder.setMessage(msgError).setTitle("Error");
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+        @Override
+        protected void onCancelled() {
+        mAuthTask = null;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mLocationManager.removeUpdates(this);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location.getLatitude() > latitude + 0.0005 || location.getLatitude() < latitude - 0.0005 ||
-                location.getLongitude() > longitude + 0.0005 || location.getLongitude() < longitude - 0.0005) {
-            this.latitude = location.getLatitude();
-            this.longitude = location.getLongitude();
-            cargarWeb(null);
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    private void cargarWeb(View view) {
-        String url = "file:///android_asset/mapa.html" + "?lat="
-                + new Double(this.latitude).toString()+"&lng="+new Double(this.longitude).toString()+
-                "&description=actual";
-        if (this.webView == null && view != null) {
-            webView = (WebView) view.findViewById(R.id.web_view_map);
-            webView.getSettings().setJavaScriptEnabled(true);
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                WebView.setWebContentsDebuggingEnabled(true);
-            }*/ //Para depuración
-        }
-
-        webView.loadUrl(url);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }
