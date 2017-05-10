@@ -130,45 +130,52 @@ public class CarsFragment extends Fragment {
     }
 
     private void init(JSONObject datos) throws JSONException{
-        ListView ll = (ListView) getView().findViewById(R.id.table_cars);
-        this.coches = new ArrayList<>();
+        if (getView() != null) {
+            ListView ll = (ListView) getView().findViewById(R.id.table_cars);
+            this.coches = new ArrayList<>();
 
-        final JSONArray cochesServidor = datos.getJSONArray("coches");
+            final JSONArray cochesServidor;
 
-        for (int i = 0; i < cochesServidor.length(); i++) {
-
-            JSONObject coche = cochesServidor.getJSONObject(i);
-
-            //COGEMOS UN COCHE
-            Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
-                    coche.getString("modelo"));
-            this.coches.add(aux);
-
-        }
-
-        adapter = new CustomListAdapter(getContext(), this.coches);
-        ll.setAdapter(adapter);
-
-        int totalHeight = 0;
-
-        for (int i = 0; i < adapter.getCount(); i++) {
-            View listItem = adapter.getView(i, null, ll);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams par = ll.getLayoutParams();
-        par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
-        ll.setLayoutParams(par);
-        ll.requestLayout();
-
-        ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
-                rowListener(position, view);
+            if (datos != null) {
+                cochesServidor = datos.getJSONArray("coches");
+            } else {
+                cochesServidor = new JSONArray();
             }
-        });
 
+            for (int i = 0; i < cochesServidor.length(); i++) {
+
+                JSONObject coche = cochesServidor.getJSONObject(i);
+
+                //COGEMOS UN COCHE
+                Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
+                        coche.getString("modelo"));
+                this.coches.add(aux);
+
+            }
+
+            adapter = new CustomListAdapter(getContext(), this.coches);
+            ll.setAdapter(adapter);
+
+            int totalHeight = 0;
+
+            for (int i = 0; i < adapter.getCount(); i++) {
+                View listItem = adapter.getView(i, null, ll);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+            ViewGroup.LayoutParams par = ll.getLayoutParams();
+            par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
+            ll.setLayoutParams(par);
+            ll.requestLayout();
+
+            ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+                    rowListener(position, view);
+                }
+            });
+        }
     }
 
     private void agregarCocheTabla(String matricula, String marca, String modelo) {
@@ -351,13 +358,14 @@ public class CarsFragment extends Fragment {
                 Coches conexion = new Coches();
                 JSONObject resultado = conexion.cargarCoches(mEmail, "0");
                 try {
-                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                        msgError = resultado.get("errorMessage").toString();
-                        return false;
-                    } else {
+                    if (Integer.parseInt(resultado.get("errorno").toString()) == 0) {
                         datos = resultado;
                         return true;
+                    } else if (Integer.parseInt(resultado.get("errorno").toString()) != 2){
+                        msgError = resultado.get("errorMessage").toString();
+                        return false;
                     }
+                    return true;
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return false;
@@ -457,34 +465,13 @@ public class CarsFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
-            // Prueba1
-            // inflate the layout for each list row
-
 
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = inflater.inflate(R.layout.car_rows, parent, false);
             }
 
-
-            /*Prueba 2
-            ViewHolder holder;
-            if(v == null){
-                v = mInflater.inflate(R.layout.fragment_cars, null);
-                holder = new ViewHolder();
-                holder.brand = (TextView)convertView.findViewById(R.id.textView_brand);
-                holder.model = (TextView)convertView.findViewById(R.id.textView_model);
-                holder.matr = (TextView)convertView.findViewById(R.id.textView_matr);
-
-                v.setTag(holder);
-            }else
-                holder = (ViewHolder) v.getTag();
-            */
-            // get current item to be displayed
             Coche currentItem = (Coche) getItem(position);
-
-            //Prueba1
-            // get the TextView for item name and item description
             TextView brand = (TextView) v.findViewById(R.id.textView_brand);
             TextView model = (TextView) v.findViewById(R.id.textView_model);
             TextView matr = (TextView) v.findViewById(R.id.textView_matr);
@@ -503,13 +490,6 @@ public class CarsFragment extends Fragment {
                 image.setVisibility(View.GONE);
                 //v.setBackgroundColor(Color.parseColor("#FFFFFF"));
             }
-
-            /*prueba2
-            holder.brand.setText(currentItem.getMarca());
-            holder.model.setText(currentItem.getModelo());
-            holder.matr.setText(currentItem.getMatricula());
-            */
-            // returns the view for the current row
             return v;
         }
 

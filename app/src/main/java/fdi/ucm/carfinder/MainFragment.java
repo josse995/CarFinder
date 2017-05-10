@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,45 +59,51 @@ public class MainFragment extends MapMainFragment {
     }
 
     private void init(JSONObject datos) throws JSONException {
-        ListView ll = (ListView) getView().findViewById(R.id.table_cars_main);
-        this.coches = new ArrayList<>();
+        if(getView() != null) {
+            ListView ll = (ListView) getView().findViewById(R.id.table_cars_main);
+            this.coches = new ArrayList<>();
 
-        final JSONArray cochesServidor = datos.getJSONArray("coches");
-
-        for (int i = 0; i < cochesServidor.length(); i++) {
-
-            JSONObject coche = cochesServidor.getJSONObject(i);
-
-            //COGEMOS UN COCHE
-            Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
-                    coche.getString("modelo"));
-            this.coches.add(aux);
-
-        }
-
-        adapter = new CarsFragment.CustomListAdapter(getContext(), this.coches);
-        ll.setAdapter(adapter);
-
-        int totalHeight = 0;
-
-        for (int i = 0; i < adapter.getCount(); i++) {
-            View listItem = adapter.getView(i, null, ll);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams par = ll.getLayoutParams();
-        par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
-        ll.setLayoutParams(par);
-        ll.requestLayout();
-
-        ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
-                rowListener(position, view);
+            final JSONArray cochesServidor;
+            if (datos != null) {
+                cochesServidor = datos.getJSONArray("coches");
+            } else {
+                cochesServidor = new JSONArray();
             }
-        });
 
+            for (int i = 0; i < cochesServidor.length(); i++) {
+
+                JSONObject coche = cochesServidor.getJSONObject(i);
+
+                //COGEMOS UN COCHE
+                Coche aux = new Coche(coche.getString("matricula"), coche.getString("marca"),
+                        coche.getString("modelo"));
+                this.coches.add(aux);
+
+            }
+
+            adapter = new CarsFragment.CustomListAdapter(getContext(), this.coches);
+            ll.setAdapter(adapter);
+
+            int totalHeight = 0;
+
+            for (int i = 0; i < adapter.getCount(); i++) {
+                View listItem = adapter.getView(i, null, ll);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+            ViewGroup.LayoutParams par = ll.getLayoutParams();
+            par.height = totalHeight + (ll.getDividerHeight() * (adapter.getCount() - 1));
+            ll.setLayoutParams(par);
+            ll.requestLayout();
+
+            ll.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+                    rowListener(position, view);
+                }
+            });
+        }
     }
 
     private void rowListener(int position, View view) {
@@ -215,15 +222,14 @@ public class MainFragment extends MapMainFragment {
             Coches conexion = new Coches();
             JSONObject resultado = conexion.cargarCoches(mEmail, "0");
             try {
-                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                if (Integer.parseInt(resultado.get("errorno").toString()) == 0) {
+                    datos = resultado;
+                    return true;
+                } else if (Integer.parseInt(resultado.get("errorno").toString()) != 2){
                     msgError = resultado.get("errorMessage").toString();
                     return false;
-                } else {
-                    datos = resultado;
-                    //Crear actividad del menú principal
-
-                    return true;
                 }
+                return true;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return false;

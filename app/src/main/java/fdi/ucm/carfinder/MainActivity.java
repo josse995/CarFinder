@@ -54,12 +54,32 @@ public class MainActivity extends AppCompatActivity
 
             }
             else {
-                Fragment fragment = new MainFragment();
+                Fragment fragment;
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.contenedor);
+                if(currentFragment == null) {
+                    fragment = new MainFragment();
+                } else if (currentFragment instanceof CarsFragment) {
+                    fragment = new CarsFragment();
+                } else if (currentFragment instanceof SettingsFragment) {
+                    fragment = new SettingsFragment();
+                } else {
+                    fragment = new MainFragment();
+                }
                 getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
             }
         }
         else {
-            Fragment fragment = new MainFragment();
+            Fragment fragment;
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.contenedor);
+            if(currentFragment == null) {
+                fragment = new MainFragment();
+            } else if (currentFragment instanceof CarsFragment) {
+                fragment = new CarsFragment();
+            } else if (currentFragment instanceof SettingsFragment) {
+                fragment = new SettingsFragment();
+            } else {
+                fragment = new MainFragment();
+            }
             getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
         }
 

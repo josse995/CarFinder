@@ -4,20 +4,32 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <WebView
-        android:id="@+id/web_view_map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="200dp"
-        />
+    <RelativeLayout
+        android:id="@+id/relayout_map"
+        android:layout_width="350dp"
+        android:layout_height="match_parent">
 
+        <WebView
+            android:id="@+id/web_view_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
 
-    <ListView
-        android:id="@+id/table_cars_main"
-        android:layout_width="match_parent"
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:layout_marginLeft="390dp"/>
+        android:layout_toRightOf="@+id/relayout_map">
+
+        <ListView
+            android:id="@+id/table_cars_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="#FFFFFF"/>
+    </RelativeLayout>
 
 
     <android.support.design.widget.FloatingActionButton
@@ -25,8 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="11dp"
+        android:layout_marginLeft="11dp"
         android:clickable="true"
         android:layout_marginBottom="10dp"
         app:fabSize="normal"

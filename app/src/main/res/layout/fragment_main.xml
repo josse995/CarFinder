@@ -7,23 +7,33 @@
     tools:context="fdi.ucm.carfinder.MainFragment"
     android:background="@color/colorPrimaryDark">
 
-    <WebView
-        android:id="@+id/web_view_map"
+    <RelativeLayout
+        android:id="@+id/relayout_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="160dp" />
+        android:layout_height="350dp">
 
-    <ListView
-        android:id="@+id/table_cars_main"
-        android:layout_width="match_parent"
+        <WebView
+            android:id="@+id/web_view_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/web_view_map"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="#FFFFFF"
-        android:layout_marginTop="350dp"/>
+        android:layout_below="@+id/relayout_map">
+
+        <ListView
+            android:id="@+id/table_cars_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="#FFFFFF"/>
+
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fb_addLocation"
