@@ -61,6 +61,8 @@ public class LoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
         mStartingView = findViewById(R.id.login_message);
 
+        getSupportActionBar().setTitle(R.string.title_activity_login);
+
         cargarPreferencias();
 
         if (user != null && password != null) {

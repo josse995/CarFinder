@@ -33,7 +33,7 @@ function ponerPosiciones(posicionActual, descripcion) {
       if (descripcion === "actual") {
         infowindow.setContent("Posición Actual");
       } else {
-        infowindow.setContent(descripcion);
+        infowindow.setContent('<a onclick="loadMapIndications()" href="#">'+descripcion+'</a>');
       }
       infowindow.open(map, marker);
     }
@@ -45,4 +45,11 @@ function getParameterByName(name) {
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function loadMapIndications() {
+	var Lat = getParameterByName('lat');
+    var Lng = getParameterByName('lng');
+    var description = getParameterByName('description');
+	window.location = 'carfinder://?lat='+Lat+'&lon='+Lng+'&description='+description;
 }

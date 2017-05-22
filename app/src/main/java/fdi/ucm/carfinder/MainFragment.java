@@ -79,9 +79,17 @@ public class MainFragment extends MapMainFragment {
 
         //noinspection SimplifiableIfStatement
         if (item.getItemId() == R.id.borrarposicion) {
-            mPositionTask = new MapLocationTask(posicionesCoches.get(lastSelected).getMatricula(), getContext(), lastSelected);
-            mPositionTask.execute((Void) null);
-            return true;
+            if (lastSelected != -1) {
+                mPositionTask = new MapLocationTask(coches.get(lastSelected).getMatricula(), getContext(), lastSelected);
+                mPositionTask.execute((Void) null);
+                return true;
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage(R.string.error_not_car_select).setTitle("Error");
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
+            }
         }
 
         return super.onOptionsItemSelected(item);

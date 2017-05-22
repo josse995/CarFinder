@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == REQUEST_GPS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Fragment fragment = new MainFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit(); //Mirar
             }else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

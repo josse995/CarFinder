@@ -1,6 +1,7 @@
 package fdi.ucm.carfinder;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,13 +19,16 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import fdi.ucm.carfinder.connection.Mapa;
 import fdi.ucm.carfinder.connection.Usuarios;
@@ -200,7 +204,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
 
     }
 
-    protected void cargarWeb(View view, Double latitud, Double longitude, String matr) {
+    protected void cargarWeb(View view, final Double latitud, final Double longitude, String matr) {
         String descripcion;
         if (matr == null)
             descripcion = "&description=actual";
@@ -218,6 +222,47 @@ public class MapMainFragment extends Fragment implements LocationListener {
         }
 
         webView.loadUrl(url);
+        webView.setWebViewClient(new WebViewClient() {
+
+            @TargetApi(Build.VERSION_CODES.N)
+            @Override
+            public boolean shouldOverrideUrlLoading (WebView view, WebResourceRequest request) {
+                if (request.getUrl().getScheme().equals("carfinder")) {
+
+                    String lat = request.getUrl().getQueryParameter("lat");
+                    String lon = request.getUrl().getQueryParameter("lon");
+                    String matr = request.getUrl().getQueryParameter("description");
+
+                    String uri = "http://maps.google.com/maps?daddr=" + lat + "," + lon + " (" + matr + ")";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    intent.setPackage("com.google.android.apps.maps");
+                    startActivity(intent);
+
+                    return true;
+                }
+                return false;
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.startsWith("carfinder://")) {
+                    String[] datos = url.split("=");
+                    String lat = datos[1].split("&")[0];
+                    String lon = datos[2].split("&")[0];
+                    String matr = datos[3];
+
+                    String uri = "http://maps.google.com/maps?daddr=" + lat + "," + lon + " (" + matr + ")";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    intent.setPackage("com.google.android.apps.maps");
+                    startActivity(intent);
+
+                    return true;
+                }
+                return false;
+            }
+
+        });
     }
 
     /**
@@ -320,7 +365,16 @@ public class MapMainFragment extends Fragment implements LocationListener {
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
                         msgError = resultado.get("errorMessage").toString();
-                        posicionesCoches.remove(index);
+                        int i = 0;
+                        Boolean encontrado = false;
+                        while (i < posicionesCoches.size() && !encontrado) {
+                            if (posicionesCoches.get(i).getMatricula().equals(mMatricula)) {
+                                posicionesCoches.remove(i);
+                                encontrado = true;
+                            } else {
+                                i++;
+                            }
+                        }
                         return false;
                     }
                     return true;
