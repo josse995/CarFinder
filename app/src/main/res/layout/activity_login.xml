@@ -72,6 +72,15 @@
                 android:inputType="textPassword"
                 android:maxLines="1"/>
 
+            <CheckBox
+                android:id="@+id/remember"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/remember_password"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"/>
+
             <Button
                 android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceSmall"

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -40,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
+    private CheckBox mRememberView;
     private View mProgressView;
     private View mLoginFormView;
     private View mStartingView;
@@ -53,6 +55,8 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
+        mRememberView = (CheckBox) findViewById(R.id.remember);
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mStartingView = findViewById(R.id.login_message);
@@ -60,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         cargarPreferencias();
 
         if (user != null && password != null) {
-            iniciarSesion(user, password);
+            iniciarSesion(user, password, true);
         }
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -69,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
                     user = mEmailView.getText().toString();
                     password =  mPasswordView.getText().toString();
-                    iniciarSesion(user, password);
+                    iniciarSesion(user, password, mRememberView.isChecked());
                     return true;
                 }
                 return false;
@@ -82,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 user = mEmailView.getText().toString();
                 password =  mPasswordView.getText().toString();
-                iniciarSesion(user, password);
+                iniciarSesion(user, password, mRememberView.isChecked());
             }
         });
 
@@ -103,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void iniciarSesion(String email, String password) {
+    private void iniciarSesion(String email, String password, Boolean remember) {
         if (mAuthTask != null) {
             return;
         }
@@ -141,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password, this);
+            mAuthTask = new UserLoginTask(email, password, this, remember);
             mAuthTask.execute((Void) null);
         }
     }
@@ -217,12 +221,14 @@ public class LoginActivity extends AppCompatActivity {
         private final String mEmail;
         private final String mPassword;
         private final Context contexto;
+        private final Boolean mRemember;
         private String msgError;
 
-        UserLoginTask(String email, String password, Context cont) {
+        UserLoginTask(String email, String password, Context cont, Boolean remember) {
             mEmail = email;
             mPassword = password;
             contexto = cont;
+            mRemember = remember;
             msgError = "";
         }
 
@@ -238,17 +244,6 @@ public class LoginActivity extends AppCompatActivity {
                     return false;
                 }
                 else {
-                    SharedPreferences sp=getSharedPreferences("Login", 0);
-                    SharedPreferences.Editor Ed=sp.edit();
-                    Ed.putString("User",mEmail );
-                    Ed.putString("Pass",mPassword);
-                    Ed.commit();
-
-                    Intent intent = new Intent(contexto, MainActivity.class);
-                    startActivity(intent);
-
-                    //Crear actividad del menú principal
-
                     return true;
                 }
             } catch (JSONException e) {
@@ -263,6 +258,14 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
+                SharedPreferences sp=getSharedPreferences("Login", 0);
+                SharedPreferences.Editor Ed=sp.edit();
+                Ed.putString("User",mEmail );
+                if (mRemember)
+                    Ed.putString("Pass",mPassword);
+                Ed.commit();
+                Intent intent = new Intent(contexto, MainActivity.class);
+                startActivity(intent);
                 finish();
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
