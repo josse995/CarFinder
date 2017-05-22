@@ -22,7 +22,7 @@
         android:id="@+id/login_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="FFFFFF"
+        android:textColor="#FFFFFF"
         android:text="@string/login_message"
         android:layout_centerInParent="true"
         android:layout_below="@id/login_progress"
