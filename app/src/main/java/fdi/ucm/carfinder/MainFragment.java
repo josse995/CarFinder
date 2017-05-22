@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,6 +25,9 @@ import java.util.ArrayList;
 
 import fdi.ucm.carfinder.connection.Coches;
 import fdi.ucm.carfinder.modelo.Coche;
+import fdi.ucm.carfinder.modelo.Posiciones;
+
+import static android.R.attr.id;
 
 /**
  * Created by Mauri on 09/05/2017.
@@ -64,6 +68,23 @@ public class MainFragment extends MapMainFragment {
         mAuthTask = new CarsTask(super.email, getContext(), 0, null, null, null, null);
         mAuthTask.execute((Void) null);
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        //int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (item.getItemId() == R.id.borrarposicion) {
+            mPositionTask = new MapLocationTask(posicionesCoches.get(lastSelected).getMatricula(), getContext(), lastSelected);
+            mPositionTask.execute((Void) null);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void init(JSONObject datos) throws JSONException {
@@ -150,53 +171,33 @@ public class MainFragment extends MapMainFragment {
                         cargarWeb(view, super.latitude, super.longitude, null);
                 }
             }
-            /*final FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);
-            fb.setImageResource(R.drawable.ic_delete);
+            final FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fb_addLocation);
             fb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setMessage(R.string.Delete_car_message).setTitle("Aviso");
-                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Coche temp = coches.get(lastSelected);
+                    Coche temp = coches.get(lastSelected);
+                    String matr = temp.getMatricula();
+                    String lat = new Double(latitude).toString();
+                    String lon = new Double(longitude).toString();
 
-                            SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
-                            final String user = sp.getString("User", null);
+                    Posiciones posicion = new Posiciones();
+                    posicion.setMatricula(matr);
+                    posicion.setLatitud(lat);
+                    posicion.setLongitud(lon);
 
-                            mAuthTask = new CarsTask(user, getContext(), 2, null, null, temp.getMatricula(), null);
-                            mAuthTask.execute((Void) null);
-                            /*fb.setImageResource(R.drawable.ic_add_black_24dp);
-                            fb.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    addListener();
-                                }
-                            });
-                            dialog.dismiss();
-                        } });
+                    posicionesCoches.add(posicion);
 
-                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        } });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    mPositionTask = new MapLocationTask(matr, lat, lon, getContext(), posicionesCoches.size() - 1);
+                    mPositionTask.execute((Void) null);
                 }
-            });*/
+            });
         }
         else {
             lastSelected = -1;
             adapter.notifyDataSetChanged();
             cargarWeb(view, super.latitude, super.longitude, null);
-            /*FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fab_addCar);
-            fb.setImageResource(R.drawable.ic_add_black_24dp);
-            fb.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    addListener();
-                }
-            });*/
+            FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fb_addLocation);
+            fb.setOnClickListener(null);
         }
     }
 

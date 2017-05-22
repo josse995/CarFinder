@@ -244,6 +244,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
         private final Context contexto;
         private JSONObject datos;
         private final int opcion;
+        private final int index;
 
         private String msgError;
 
@@ -255,9 +256,21 @@ public class MapMainFragment extends Fragment implements LocationListener {
             contexto = cont;
             msgError = "";
             opcion = 0;
+            index = -1;
         }
 
-        MapLocationTask(String matricula, String latitud, String longitud, Context cont) {
+        MapLocationTask(String matricula, Context cont, int ind) {
+            mEmail = null;
+            mMatricula = matricula;
+            mLatitud = null;
+            mLongitud = null;
+            contexto = cont;
+            msgError = "";
+            opcion = 2;
+            index = ind;
+        }
+
+        MapLocationTask(String matricula, String latitud, String longitud, Context cont, int ind) {
             mEmail = null;
             mMatricula = matricula;
             mLatitud = latitud;
@@ -265,6 +278,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
             contexto = cont;
             msgError = "";
             opcion = 1;
+            index = ind;
         }
 
         @Override
@@ -286,9 +300,37 @@ public class MapMainFragment extends Fragment implements LocationListener {
                     e.printStackTrace();
                     return false;
                 }
+            } else if (opcion == 1) {
+                Mapa conexion = new Mapa();
+                JSONObject resultado = conexion.insertarPosicion(mMatricula, mLatitud, mLongitud);
+                try {
+                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                        msgError = resultado.get("errorMessage").toString();
+                        posicionesCoches.remove(index);
+                        return false;
+                    }
+                    return true;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            } else if (opcion == 2) {
+                Mapa conexion = new Mapa();
+                JSONObject resultado = conexion.eliminarPosicion(mMatricula);
+                try {
+                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                        msgError = resultado.get("errorMessage").toString();
+                        posicionesCoches.remove(index);
+                        return false;
+                    }
+                    return true;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            } else {
+                return false;
             }
-
-            return false;
         }
 
         @Override
@@ -316,7 +358,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
-                } else {
+                } else if (opcion != 1 && opcion != 2) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
                     builder.setMessage(msgError).setTitle("Error");
                     AlertDialog alert = builder.create();
