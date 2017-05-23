@@ -69,6 +69,8 @@
     <!-- String realated to FragmentMain -->
     <string name="delete_position">Borrar posición</string>
     <string name="error_not_car_select">No ha seleccionado ningún coche</string>
+    <string name="saved_position">Posición guardada</string>
+    <string name="deleted_position">Posición eliminada</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,12 +1,9 @@
 package fdi.ucm.carfinder;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,8 +23,6 @@ import java.util.ArrayList;
 import fdi.ucm.carfinder.connection.Coches;
 import fdi.ucm.carfinder.modelo.Coche;
 import fdi.ucm.carfinder.modelo.Posiciones;
-
-import static android.R.attr.id;
 
 /**
  * Created by Mauri on 09/05/2017.
@@ -82,6 +77,7 @@ public class MainFragment extends MapMainFragment {
             if (lastSelected != -1) {
                 mPositionTask = new MapLocationTask(coches.get(lastSelected).getMatricula(), getContext(), lastSelected);
                 mPositionTask.execute((Void) null);
+                rowListener(lastSelected, getView());
                 return true;
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -185,8 +181,8 @@ public class MainFragment extends MapMainFragment {
                 public void onClick(View view) {
                     Coche temp = coches.get(lastSelected);
                     String matr = temp.getMatricula();
-                    String lat = new Double(latitude).toString();
-                    String lon = new Double(longitude).toString();
+                    String lat = Double.valueOf(latitude).toString();
+                    String lon = Double.valueOf(longitude).toString();
 
                     Posiciones posicion = new Posiciones();
                     posicion.setMatricula(matr);
@@ -296,8 +292,6 @@ public class MainFragment extends MapMainFragment {
             } else if (opcion == 1){
                 alertAbierto.dismiss();
                 //agregarCocheTabla(matr, brand, model);
-            } else if (opcion == 2){
-                //eliminarCocheTabla();
             }
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
@@ -311,7 +305,6 @@ public class MainFragment extends MapMainFragment {
         protected void onCancelled() {
         mAuthTask = null;
     }
-
 
     }
 }

@@ -52,7 +52,6 @@ public class CarsFragment extends Fragment {
     private ArrayList<Coche> coches;
     private CustomListAdapter adapter;
     private int lastSelected;
-    private View mView;
 
     public CarsFragment() {
         // Required empty public constructor
@@ -82,7 +81,6 @@ public class CarsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cars, container, false);
-        mView = inflater.inflate(R.layout.popup_coches, container, false);
 
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
@@ -106,19 +104,21 @@ public class CarsFragment extends Fragment {
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
 
-        //final View mView = view;
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        mBuilder.setView(mView);
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.popup_coches,null);
+        final EditText mBrand = (EditText)view.findViewById(R.id.new_car_brand);
+        final EditText mModel = (EditText)view.findViewById(R.id.new_car_model);
+        final EditText mMatr = (EditText)view.findViewById(R.id.new_car_matr);
+        mBuilder.setView(view);
         final AlertDialog dialog = mBuilder.create();
         dialog.show();
 
-        Button button = (Button)mView.findViewById(R.id.button_new_car);
+        Button button = (Button)view.findViewById(R.id.button_new_car);
         button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                EditText mBrand = (EditText)mView.findViewById(R.id.new_car_brand);
-                EditText mModel = (EditText)mView.findViewById(R.id.new_car_model);
-                EditText mMatr = (EditText)mView.findViewById(R.id.new_car_matr);
                 String brand = mBrand.getText().toString();
                 String model = mModel.getText().toString();
                 String matr = mMatr.getText().toString();

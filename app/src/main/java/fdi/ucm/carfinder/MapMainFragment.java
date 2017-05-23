@@ -22,17 +22,15 @@ import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import fdi.ucm.carfinder.connection.Mapa;
-import fdi.ucm.carfinder.connection.Usuarios;
-import fdi.ucm.carfinder.modelo.Coche;
 import fdi.ucm.carfinder.modelo.Posiciones;
 
 
@@ -137,13 +135,6 @@ public class MapMainFragment extends Fragment implements LocationListener {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -211,7 +202,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
         else
             descripcion = "&description="+matr;
         String url = "file:///android_asset/mapa.html" + "?lat="
-                + new Double(latitud).toString()+"&lng="+new Double(longitude).toString()+
+                + Double.valueOf(latitud).toString()+"&lng="+ Double.valueOf(longitude).toString() +
                 descripcion;
         if (this.webView == null && view != null) {
             webView = (WebView) view.findViewById(R.id.web_view_map);
@@ -365,16 +356,6 @@ public class MapMainFragment extends Fragment implements LocationListener {
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
                         msgError = resultado.get("errorMessage").toString();
-                        int i = 0;
-                        Boolean encontrado = false;
-                        while (i < posicionesCoches.size() && !encontrado) {
-                            if (posicionesCoches.get(i).getMatricula().equals(mMatricula)) {
-                                posicionesCoches.remove(i);
-                                encontrado = true;
-                            } else {
-                                i++;
-                            }
-                        }
                         return false;
                     }
                     return true;
@@ -412,7 +393,31 @@ public class MapMainFragment extends Fragment implements LocationListener {
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
-                } else if (opcion != 1 && opcion != 2) {
+                } else if(opcion == 1) {
+                    Toast.makeText(
+                            getContext(),
+                            R.string.saved_position, Toast.LENGTH_SHORT
+                    ).show();
+                    cargarWeb(getView(), Double.parseDouble(mLatitud), Double.parseDouble(mLongitud),
+                            mMatricula);
+                }
+                else if (opcion == 2) {
+                    int i = 0;
+                    Boolean encontrado = false;
+                    while (i < posicionesCoches.size() && !encontrado) {
+                        if (posicionesCoches.get(i).getMatricula().equals(mMatricula)) {
+                            posicionesCoches.remove(i);
+                            encontrado = true;
+                        } else {
+                            i++;
+                        }
+                    }
+                    Toast.makeText(
+                            getContext(),
+                            R.string.deleted_position, Toast.LENGTH_SHORT
+                    ).show();
+                    cargarWeb(getView(), latitude, longitude, null);
+                } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
                     builder.setMessage(msgError).setTitle("Error");
                     AlertDialog alert = builder.create();
