@@ -74,6 +74,7 @@
     <string name="error_not_car_select">No ha seleccionado ningún coche</string>
     <string name="saved_position">Posición guardada</string>
     <string name="deleted_position">Posición eliminada</string>
+    <string name="deleted_position_error">El coche no está aparcado</string>
 
 
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="100dp"
+        android:layout_width="75dp"
         android:layout_height="50dp"
         android:id="@+id/textView_brand"
         android:gravity="center"
@@ -16,15 +16,15 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:id="@+id/textView_model"
-        android:layout_toRightOf="@+id/textView_brand"
+        android:layout_toEndOf="@+id/textView_brand"
         android:gravity="center"
         />
 
     <TextView
-        android:layout_width="100dp"
+        android:layout_width="80dp"
         android:layout_height="50dp"
         android:id="@+id/textView_matr"
-        android:layout_toRightOf="@+id/textView_model"
+        android:layout_toEndOf="@+id/textView_model"
         android:gravity="center"
         />
 
@@ -33,8 +33,8 @@
         app:srcCompat="@drawable/ic_check"
         android:layout_width="30dp"
         android:layout_height="50dp"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@+id/textView_matr"
+        android:layout_marginStart="20dp"
+        android:layout_toEndOf="@+id/textView_matr"
         android:gravity="center"
         android:visibility="gone"
         />

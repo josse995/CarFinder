@@ -39,12 +39,12 @@ import fdi.ucm.carfinder.modelo.Coche;
  * create an instance of this fragment.
  */
 public class CarsFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    //private static final String ARG_PARAM1 = "param1";
+    //private static final String ARG_PARAM2 = "param2";
     private CarsTask mAuthTask = null;
 
-    private String mParam1;
-    private String mParam2;
+    //private String mParam1;
+    //private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -60,8 +60,8 @@ public class CarsFragment extends Fragment {
     public static CarsFragment newInstance(String param1, String param2) {
         CarsFragment fragment = new CarsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        //args.putString(ARG_PARAM1, param1);
+        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,10 +69,10 @@ public class CarsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        /*if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        }*/
     }
 
     @Override
@@ -351,9 +351,9 @@ public class CarsFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+
+            Coches conexion = new Coches();
             if(opcion == 0) {
-                Coches conexion = new Coches();
                 JSONObject resultado = conexion.cargarCoches(mEmail, "0");
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) == 0) {
@@ -369,7 +369,6 @@ public class CarsFragment extends Fragment {
                     return false;
                 }
             }else if (opcion == 1){
-                Coches conexion = new Coches();
                 JSONObject resultado = conexion.insertarCoche(matr, brand, model, mEmail);
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
@@ -383,7 +382,6 @@ public class CarsFragment extends Fragment {
                     return false;
                 }
             }else if (opcion == 2){
-                Coches conexion = new Coches();
                 JSONObject resultado = conexion.eliminarCoche(matr, mEmail);
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {

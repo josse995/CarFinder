@@ -45,8 +45,8 @@ public class MapMainFragment extends Fragment implements LocationListener {
     protected String email;
     protected double latitude; // latitude
     protected double longitude; // longitude
-    private boolean gps_enabled = false;
-    private boolean network_enabled = false;
+    protected boolean gps_enabled = false;
+    protected boolean network_enabled = false;
 
     private OnFragmentInteractionListener mListener;
     private LocationManager mLocationManager;
@@ -76,21 +76,19 @@ public class MapMainFragment extends Fragment implements LocationListener {
         }
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         Location net_loc = null, gps_loc = null, finalLoc = null;
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+
+            gps_enabled = false;
+            network_enabled = false;
+        }
+
+        else {
+            gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         }
 
         if (gps_enabled)
@@ -99,22 +97,15 @@ public class MapMainFragment extends Fragment implements LocationListener {
             net_loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         if (gps_loc != null && net_loc != null) {
-
-            //smaller the number more accurate result will
             if (gps_loc.getAccuracy() > net_loc.getAccuracy())
                 finalLoc = net_loc;
             else
                 finalLoc = gps_loc;
-
-            // I used this just to get an idea (if both avail, its upto you which you want to take as I've taken location with more accuracy)
-
         } else {
-
-            if (gps_loc != null) {
+            if (gps_loc != null)
                 finalLoc = gps_loc;
-            } else if (net_loc != null) {
+            else if (net_loc != null)
                 finalLoc = net_loc;
-            }
         }
         if (finalLoc != null) {
             latitude = finalLoc.getLatitude();
@@ -131,7 +122,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         email = sp.getString("User", null);
 
-        this.cargarWeb(view, this.latitude, this.longitude, null);
+        this.cargarWeb(view);
         return view;
     }
 
@@ -176,7 +167,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
                 location.getLongitude() > longitude + 0.0005 || location.getLongitude() < longitude - 0.0005) {
             this.latitude = location.getLatitude();
             this.longitude = location.getLongitude();
-            cargarWeb(null, this.latitude, this.longitude, null);
+            cargarWeb(null);
         }
     }
 
@@ -193,6 +184,26 @@ public class MapMainFragment extends Fragment implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    protected void cargarWeb(View view) {
+        String url;
+        if (!gps_enabled && !network_enabled) {
+            url = "file:///android_asset/error.html";
+        } else {
+            url = "file:///android_asset/mapa.html" + "?lat="
+                    + latitude + "&lng="+ longitude + "&description=actual";
+        }
+
+        if (this.webView == null && view != null) {
+            webView = (WebView) view.findViewById(R.id.web_view_map);
+            webView.getSettings().setJavaScriptEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            } //Para depuración
+        }
+
+        webView.loadUrl(url);
     }
 
     protected void cargarWeb(View view, final Double latitud, final Double longitude, String matr) {
@@ -284,7 +295,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
 
         private String msgError;
 
-        MapLocationTask(String email, Context cont) {
+        /*MapLocationTask(String email, Context cont) {
             mEmail = email;
             mMatricula = null;
             mLatitud = null;
@@ -304,25 +315,25 @@ public class MapMainFragment extends Fragment implements LocationListener {
             msgError = "";
             opcion = 2;
             index = ind;
-        }
+        }*/
 
-        MapLocationTask(String matricula, String latitud, String longitud, Context cont, int ind) {
-            mEmail = null;
+        MapLocationTask(String email, String matricula, String latitud, String longitud,
+                        Context cont, int ind, int opt) {
+            mEmail = email;
             mMatricula = matricula;
             mLatitud = latitud;
             mLongitud = longitud;
             contexto = cont;
             msgError = "";
-            opcion = 1;
+            opcion = opt;
             index = ind;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
+            Mapa conexion = new Mapa();
             if (opcion == 0) {
-                Mapa conexion = new Mapa();
                 JSONObject resultado = conexion.cargarPosiciones(mEmail);
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
@@ -337,7 +348,6 @@ public class MapMainFragment extends Fragment implements LocationListener {
                     return false;
                 }
             } else if (opcion == 1) {
-                Mapa conexion = new Mapa();
                 JSONObject resultado = conexion.insertarPosicion(mMatricula, mLatitud, mLongitud);
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
@@ -351,7 +361,6 @@ public class MapMainFragment extends Fragment implements LocationListener {
                     return false;
                 }
             } else if (opcion == 2) {
-                Mapa conexion = new Mapa();
                 JSONObject resultado = conexion.eliminarPosicion(mMatricula);
                 try {
                     if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
@@ -416,7 +425,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
                             getContext(),
                             R.string.deleted_position, Toast.LENGTH_SHORT
                     ).show();
-                    cargarWeb(getView(), latitude, longitude, null);
+                    cargarWeb(getView());
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
                     builder.setMessage(msgError).setTitle("Error");

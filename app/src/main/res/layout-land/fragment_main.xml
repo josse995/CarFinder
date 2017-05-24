@@ -1,46 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
-        android:id="@+id/relayout_map"
-        android:layout_width="350dp"
-        android:layout_height="match_parent">
-
-        <WebView
-            android:id="@+id/web_view_map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
-    </RelativeLayout>
-
-    <RelativeLayout android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@+id/relayout_map">
+        android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/table_cars_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:background="#FFFFFF"/>
-    </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/relayout_map"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
 
+            <WebView
+                android:id="@+id/web_view_map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:baselineAligned="false"
+            android:layout_width="235dp"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/table_cars_main"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fb_addLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="11dp"
+        android:layout_margin="16dp"
         android:clickable="true"
-        android:layout_marginBottom="10dp"
+        app:layout_anchor="@id/relayout_map"
+        app:layout_anchorGravity="bottom|right|end"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_add_black_24dp" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

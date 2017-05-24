@@ -112,14 +112,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         //getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -129,17 +129,17 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_settings) {
             return true;
-        }*/
+        }*
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_GPS) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            /*if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Fragment fragment = new MainFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commit(); //Mirar
+                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commitAllowingStateLoss();
             }else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -158,7 +158,9 @@ public class MainActivity extends AppCompatActivity
                 });
                 AlertDialog alert = builder.create();
                 alert.show();
-            }
+            }*/
+            Fragment fragment = new MainFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commitAllowingStateLoss();
         }
     }
 
@@ -191,7 +193,6 @@ public class MainActivity extends AppCompatActivity
             Ed.remove("lastName");
             Ed.remove("date");
             Ed.commit();
-
 
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,35 +58,45 @@ public class MainFragment extends MapMainFragment {
                              Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        mPositionTask = new MapLocationTask(super.email, getContext());
+        mPositionTask = new MapLocationTask(super.email, null, null, null, getContext(), -1, 0);
         mPositionTask.execute((Void) null);
 
-        mAuthTask = new CarsTask(super.email, getContext(), 0, null, null, null, null);
+        mAuthTask = new CarsTask(super.email, getContext());
         mAuthTask.execute((Void) null);
         return view;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (item.getItemId() == R.id.borrarposicion) {
             if (lastSelected != -1) {
-                mPositionTask = new MapLocationTask(coches.get(lastSelected).getMatricula(), getContext(), lastSelected);
-                mPositionTask.execute((Void) null);
-                rowListener(lastSelected, getView());
-                return true;
+                int i = 0;
+                Boolean encontrado = false;
+                while (i < posicionesCoches.size() && !encontrado) {
+                    if (coches.get(lastSelected).getMatricula().equals(posicionesCoches.get(i).getMatricula()))
+                        encontrado = true;
+                    else
+                        ++i;
+                }
+                if (encontrado) {
+                    mPositionTask = new MapLocationTask(null, coches.get(lastSelected).getMatricula(),
+                            null, null, getContext(), lastSelected, 2);
+                    mPositionTask.execute((Void) null);
+                    rowListener(lastSelected, getView());
+                    return true;
+                } else {
+                    Toast.makeText(
+                            getContext(),
+                            R.string.deleted_position_error, Toast.LENGTH_SHORT
+                    ).show();
+                }
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage(R.string.error_not_car_select).setTitle("Error");
                 AlertDialog alert = builder.create();
                 alert.show();
-                return false;
             }
+            return false;
         }
 
         return super.onOptionsItemSelected(item);
@@ -140,25 +151,25 @@ public class MainFragment extends MapMainFragment {
     }
 
     private void rowListener(int position, View view) {
-        for(int i = 0; i < coches.size(); i++) {
+        for(int i = 0; i < coches.size(); ++i) {
             coches.get(i).setSelected(false);
         }
 
         if (lastSelected != position) {
             lastSelected = position;
-            Coche temp = coches.get(position);
+            final Coche temp = coches.get(position);
             temp.setSelected(true);
             adapter.notifyDataSetChanged();
             view.setSelected(true);
 
             if(!posicionesCoches.isEmpty()) {
-                if (position < posicionesCoches.size()) {
+                /*if (position < posicionesCoches.size()) {
                     if (coches.get(position).getMatricula().equals(posicionesCoches.get(position).getMatricula())) {
                         Double lat = Double.parseDouble(posicionesCoches.get(position).getLatitud());
                         Double lon = Double.parseDouble(posicionesCoches.get(position).getLongitud());
                         cargarWeb(view, lat, lon, temp.getMatricula());
                     }
-                } else {
+                } else {*/
                     int i = 0;
                     Boolean encontrado = false;
                     while (i < posicionesCoches.size() && !encontrado) {
@@ -172,34 +183,36 @@ public class MainFragment extends MapMainFragment {
                         Double lon = Double.parseDouble(posicionesCoches.get(i).getLongitud());
                         cargarWeb(view, lat, lon, temp.getMatricula());
                     } else
-                        cargarWeb(view, super.latitude, super.longitude, null);
-                }
+                        cargarWeb(view);
+               // }
             }
             final FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fb_addLocation);
             fb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Coche temp = coches.get(lastSelected);
-                    String matr = temp.getMatricula();
-                    String lat = Double.valueOf(latitude).toString();
-                    String lon = Double.valueOf(longitude).toString();
+                    if (gps_enabled || network_enabled) {
+                        String matr = temp.getMatricula();
+                        String lat = Double.valueOf(latitude).toString();
+                        String lon = Double.valueOf(longitude).toString();
 
-                    Posiciones posicion = new Posiciones();
-                    posicion.setMatricula(matr);
-                    posicion.setLatitud(lat);
-                    posicion.setLongitud(lon);
+                        Posiciones posicion = new Posiciones();
+                        posicion.setMatricula(matr);
+                        posicion.setLatitud(lat);
+                        posicion.setLongitud(lon);
 
-                    posicionesCoches.add(posicion);
+                        posicionesCoches.add(posicion);
 
-                    mPositionTask = new MapLocationTask(matr, lat, lon, getContext(), posicionesCoches.size() - 1);
-                    mPositionTask.execute((Void) null);
+                        mPositionTask = new MapLocationTask(null, matr, lat, lon,
+                                getContext(), posicionesCoches.size() - 1, 1);
+                        mPositionTask.execute((Void) null);
+                    }
                 }
             });
         }
         else {
             lastSelected = -1;
             adapter.notifyDataSetChanged();
-            cargarWeb(view, super.latitude, super.longitude, null);
+            cargarWeb(view);
             FloatingActionButton fb = (FloatingActionButton) getView().findViewById(R.id.fb_addLocation);
             fb.setOnClickListener(null);
         }
@@ -207,31 +220,20 @@ public class MainFragment extends MapMainFragment {
 
     private class CarsTask extends AsyncTask<Void, Void, Boolean> {
 
-        private int opcion;
         private final String mEmail;
         private final Context contexto;
         private String msgError;
         private JSONObject datos;
-        private String brand;
-        private String model;
-        private String matr;
-        private AlertDialog alertAbierto;
 
-        CarsTask(String email, Context cont, int opcion, String brand, String model, String matr, AlertDialog alerta) {
-        mEmail = email;
-        contexto = cont;
-        msgError = "";
-        this.opcion = opcion;
-        this.brand = brand;
-        this.model = model;
-        this.matr = matr;
-        this.alertAbierto = alerta;
-    }
+        CarsTask(String email, Context cont) {
+            mEmail = email;
+            contexto = cont;
+            msgError = "";
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {
         // TODO: attempt authentication against a network service.
-        if(opcion == 0) {
             Coches conexion = new Coches();
             JSONObject resultado = conexion.cargarCoches(mEmail, "0");
             try {
@@ -247,51 +249,16 @@ public class MainFragment extends MapMainFragment {
                 e.printStackTrace();
                 return false;
             }
-        }else if (opcion == 1){
-            Coches conexion = new Coches();
-            JSONObject resultado = conexion.insertarCoche(matr, brand, model, mEmail);
-            try {
-                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                    msgError = resultado.get("errorMessage").toString();
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }else if (opcion == 2){
-            Coches conexion = new Coches();
-            JSONObject resultado = conexion.eliminarCoche(matr, mEmail);
-            try {
-                if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                    msgError = resultado.get("errorMessage").toString();
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return false;
     }
 
         @Override
         protected void onPostExecute(final Boolean success) {
         mAuthTask = null;
         if (success) {
-            if (opcion == 0) {
-                try {
-                    init(datos);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else if (opcion == 1){
-                alertAbierto.dismiss();
-                //agregarCocheTabla(matr, brand, model);
+            try {
+                init(datos);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
