@@ -57,6 +57,9 @@
     <string name="view_my_data">Ver mis datos</string>
     <string name="change_email">Cambiar Email</string>
     <string name="change_password">Cambiar contraseña</string>
+    <string name="new_user">Nuevo Email</string>
+    <string name="new_password">Contraseña nueva</string>
+    <string name="old_password">Contraseña antigua</string>
 
     <!-- String related to CarsFragment -->
     <string name="title_cars">Mis coches</string>
@@ -72,11 +75,6 @@
     <string name="saved_position">Posición guardada</string>
     <string name="deleted_position">Posición eliminada</string>
 
-    <!-- String related to View my data-->
-    <string name="nombre_dos_puntos">Nombre: </string>
-    <string name="apellidos_dos_puntos">Apellidos: </string>
-    <string name="email_dos_puntos">Email: </string>
-    <string name="date_dos_puntos">Date: </string>
 
 
 </resources>
