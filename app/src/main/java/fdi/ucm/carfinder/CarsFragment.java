@@ -3,7 +3,6 @@ package fdi.ucm.carfinder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -85,7 +84,7 @@ public class CarsFragment extends Fragment {
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
 
-        //Esto te abre el popup para añadir un coche
+        //Esto te abre el popup_cars para añadir un coche
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addCar);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,10 +103,9 @@ public class CarsFragment extends Fragment {
         SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
         final String user = sp.getString("User", null);
 
-
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.popup_coches,null);
+        View view = inflater.inflate(R.layout.popup_cars,null);
         final EditText mBrand = (EditText)view.findViewById(R.id.new_car_brand);
         final EditText mModel = (EditText)view.findViewById(R.id.new_car_model);
         final EditText mMatr = (EditText)view.findViewById(R.id.new_car_matr);

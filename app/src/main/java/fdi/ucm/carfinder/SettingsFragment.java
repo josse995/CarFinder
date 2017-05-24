@@ -1,12 +1,18 @@
 package fdi.ucm.carfinder;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
 /**
@@ -63,8 +69,40 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        Button viewDataButton = (Button)view.findViewById(R.id.buttonView_my_data);
+        viewDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View view5 = inflater.inflate(R.layout.popup_data,null);
+
+                SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
+                final String user = "Email: \n\t" + sp.getString("User", null);
+                final String name = "Nombre: \n\t" + sp.getString("name", null);
+                final String lastName = "Apellidos: \n\t" + sp.getString("lastName", null);
+                final String date = "Fecha: \n\t" + sp.getString("date", null);
+
+                TextView mName = (TextView)view5.findViewById(R.id.view_data_name);
+                TextView mLastName = (TextView)view5.findViewById(R.id.view_data_lastname);
+                TextView mDate = (TextView)view5.findViewById(R.id.view_data_date);
+                TextView mEmail = (TextView)view5.findViewById(R.id.view_data_email);
+
+                mName.setText(name);
+                mLastName.setText(lastName);
+                mDate.setText(date);
+                mEmail.setText(user);
+
+                mBuilder.setView(view5);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+            }
+        });
+
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

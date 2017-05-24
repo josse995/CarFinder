@@ -187,7 +187,11 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor Ed=sp.edit();
             Ed.remove("User");
             Ed.remove("Pass");
+            Ed.remove("name");
+            Ed.remove("lastName");
+            Ed.remove("date");
             Ed.commit();
+
 
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

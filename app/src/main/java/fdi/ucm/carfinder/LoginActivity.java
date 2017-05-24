@@ -225,6 +225,10 @@ public class LoginActivity extends AppCompatActivity {
         private final Context contexto;
         private final Boolean mRemember;
         private String msgError;
+        private String name;
+        private String lastName;
+        private String date;
+
 
         UserLoginTask(String email, String password, Context cont, Boolean remember) {
             mEmail = email;
@@ -246,6 +250,9 @@ public class LoginActivity extends AppCompatActivity {
                     return false;
                 }
                 else {
+                    name = resultado.get("nombre").toString();
+                    lastName = resultado.get("apellidos").toString();
+                    date = resultado.get("fecha").toString();
                     return true;
                 }
             } catch (JSONException e) {
@@ -265,7 +272,10 @@ public class LoginActivity extends AppCompatActivity {
                 Ed.putString("User",mEmail );
                 if (mRemember)
                     Ed.putString("Pass",mPassword);
-                Ed.commit();
+                Ed.putString("name", name);
+                Ed.putString("lastName", lastName);
+                Ed.putString("date", date);
+                Ed.apply();
                 Intent intent = new Intent(contexto, MainActivity.class);
                 startActivity(intent);
                 finish();
