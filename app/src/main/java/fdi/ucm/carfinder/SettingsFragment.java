@@ -82,6 +82,8 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         final SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
+        final String usuario = sp.getString("User", null);
+
         //Correspondiente al ver mis datos
         Button viewDataButton = (Button)view.findViewById(R.id.buttonView_my_data);
         viewDataButton.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +93,7 @@ public class SettingsFragment extends Fragment {
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View view5 = inflater.inflate(R.layout.popup_data,null);
 
-                final String user = "Email: \n\t" + sp.getString("User", null);
+                final String user = "Email: \n\t" + usuario;
                 final String name = "Nombre: \n\t" + sp.getString("name", null);
                 final String lastName = "Apellidos: \n\t" + sp.getString("lastName", null);
                 final String date = "Fecha: \n\t" + sp.getString("date", null);
@@ -122,27 +124,30 @@ public class SettingsFragment extends Fragment {
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View view5 = inflater.inflate(R.layout.popup_change_user,null);
 
-                final String user = sp.getString("User", null);
                 final EditText mEmail = (EditText) view5.findViewById(R.id.new_user);
 
                 Button okButton = (Button) view5.findViewById(R.id.button_modify_user);
+
+                mBuilder.setView(view5);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         newEmail = mEmail.getText().toString();
                         if(newEmail.contains("@")){
-                            mAuthTask = new ChangeTask(user, newEmail, null, null, null, getContext(), 0);
+                            mAuthTask = new ChangeTask(usuario, newEmail, null, null, null, getContext(), 0, dialog, null);
                             mAuthTask.execute((Void) null);
+
                         }else{
-                            mBuilder.setMessage("Las contraseñas no coinciden o no tienen la longitud necesaria").setTitle("Error");
-                            AlertDialog alert = mBuilder.create();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setMessage("Las contraseñas no coinciden o no tienen la longitud necesaria").setTitle("Error");
+                            AlertDialog alert = builder.create();
                             alert.show();
                         }
                     }
                 });
-                mBuilder.setView(view5);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
             }
         });
 
@@ -155,31 +160,36 @@ public class SettingsFragment extends Fragment {
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View view5 = inflater.inflate(R.layout.popup_change_password,null);
 
-                final String user = sp.getString("User", null);
+                final String pass = sp.getString("Pass", null);
                 final EditText mOldPass = (EditText) view5.findViewById(R.id.old_password);
                 final EditText mNewPass1 = (EditText) view5.findViewById(R.id.new_password1);
                 final EditText mNewPass2 = (EditText) view5.findViewById(R.id.new_password2);
 
                 Button okButton = (Button)view5.findViewById(R.id.button_modify_password);
+
+                mBuilder.setView(view5);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String oldPass = mOldPass.getText().toString();
                         String newPass1 = mNewPass1.getText().toString();
                         String newPass2 = mNewPass2.getText().toString();
-                        if((newPass1 == newPass2) && (newPass1.length() > 3)){
-                            mAuthTask = new ChangeTask(user, null, oldPass, newPass1, newPass2, getContext(), 1);
+                        if((newPass1.equals(newPass2)) && (newPass1.length() > 3)){
+                            final String pass = sp.getString("Pass", null);
+                            mAuthTask = new ChangeTask(usuario, null, oldPass, newPass1, newPass2, getContext(), 1, dialog,
+                                    pass != null);
                             mAuthTask.execute((Void) null);
                         }else{
-                            mBuilder.setMessage("Las contraseñas no coinciden o no tienen la longitud necesaria").setTitle("Error");
-                            AlertDialog alert = mBuilder.create();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setMessage("Las contraseñas no coinciden o no tienen la longitud necesaria").setTitle("Error");
+                            AlertDialog alert = builder.create();
                             alert.show();
                         }
                     }
                 });
-                mBuilder.setView(view5);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
             }
         });
 
@@ -237,8 +247,10 @@ public class SettingsFragment extends Fragment {
         private String msgError;
         private AlertDialog alertAbierto;
         private int opcion;
+        private Boolean rememberPass;
 
-        ChangeTask(String oldEmail, String newEmail, String oldPass, String newPass1, String newPass2, Context context, int opcion) {
+        ChangeTask(String oldEmail, String newEmail, String oldPass, String newPass1, String newPass2,
+                   Context context, int opcion, AlertDialog alerta, Boolean remember) {
             this.oldEmail = oldEmail;
             this.newEmail = newEmail;
             this.oldPass = oldPass;
@@ -246,6 +258,8 @@ public class SettingsFragment extends Fragment {
             this.newPass2 = newPass2;
             this.context = context;
             this.opcion = opcion;
+            this.alertAbierto = alerta;
+            this.rememberPass = remember;
         }
 
 
@@ -273,15 +287,14 @@ public class SettingsFragment extends Fragment {
                 }
             } else if (opcion == 1) {
                 try {
-                    JSONObject resultado = conexion.cambiarPasswpord(oldEmail, newPass1);
+                    JSONObject resultado = conexion.cambiarPasswpord(oldEmail, oldPass, newPass1);
                     if (Integer.parseInt(resultado.get("errorno").toString()) == 0) {
                         datos = resultado;
                         return true;
-                    } else if (Integer.parseInt(resultado.get("errorno").toString()) != 2) {
+                    } else {
                         msgError = resultado.get("errorMessage").toString();
                         return false;
                     }
-                    return true;
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return false;
@@ -295,10 +308,17 @@ public class SettingsFragment extends Fragment {
             mAuthTask = null;
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             if(success){
+                if (opcion == 1 && rememberPass) {
+                    SharedPreferences sp = getActivity().getSharedPreferences("Login", 0);
+                    SharedPreferences.Editor Ed = sp.edit();
+                    Ed.putString("Pass",newPass1);
+                    Ed.apply();
+                }
                 msgError = "";
                 builder.setMessage(msgError).setTitle("Exito!");
                 AlertDialog alert = builder.create();
                 alert.show();
+                alertAbierto.dismiss();
             }else{
                 builder.setMessage(msgError).setTitle("Error");
                 AlertDialog alert = builder.create();

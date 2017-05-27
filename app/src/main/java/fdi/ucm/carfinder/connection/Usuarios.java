@@ -29,8 +29,9 @@ public class Usuarios extends Conexion {
         return this.ejecutar(datos, this.usuarios);
     }
 
-    public JSONObject cambiarPasswpord(String email, String password) {
-        final String datos = "action=modificarPassword&email="+email+"&password="+password;
+    public JSONObject cambiarPasswpord(String email, String password, String new_pass) {
+        final String datos = "action=modificarPassword&email="+email+"&password="+password+
+                "&new_password="+new_pass;
 
         return this.ejecutar(datos, this.usuarios);
     }
