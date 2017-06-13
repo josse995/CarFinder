@@ -198,29 +198,23 @@ public class MapMainFragment extends Fragment implements LocationListener {
         if (this.webView == null && view != null) {
             webView = (WebView) view.findViewById(R.id.web_view_map);
             webView.getSettings().setJavaScriptEnabled(true);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                WebView.setWebContentsDebuggingEnabled(true);
-            } //Para depuración
         }
 
         webView.loadUrl(url);
     }
 
     protected void cargarWeb(View view, final Double latitud, final Double longitude, String matr) {
-        String descripcion;
-        if (matr == null)
+        String descripcion =
+        /*if (matr == null)
             descripcion = "&description=actual";
         else
-            descripcion = "&description="+matr;
+            descripcion = "&*/"description="+matr;
         String url = "file:///android_asset/mapa.html" + "?lat="
                 + Double.valueOf(latitud).toString()+"&lng="+ Double.valueOf(longitude).toString() +
                 descripcion;
         if (this.webView == null && view != null) {
             webView = (WebView) view.findViewById(R.id.web_view_map);
             webView.getSettings().setJavaScriptEnabled(true);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                WebView.setWebContentsDebuggingEnabled(true);
-            } //Para depuración
         }
 
         webView.loadUrl(url);
@@ -294,28 +288,6 @@ public class MapMainFragment extends Fragment implements LocationListener {
         private final int index;
 
         private String msgError;
-
-        /*MapLocationTask(String email, Context cont) {
-            mEmail = email;
-            mMatricula = null;
-            mLatitud = null;
-            mLongitud = null;
-            contexto = cont;
-            msgError = "";
-            opcion = 0;
-            index = -1;
-        }
-
-        MapLocationTask(String matricula, Context cont, int ind) {
-            mEmail = null;
-            mMatricula = matricula;
-            mLatitud = null;
-            mLongitud = null;
-            contexto = cont;
-            msgError = "";
-            opcion = 2;
-            index = ind;
-        }*/
 
         MapLocationTask(String email, String matricula, String latitud, String longitud,
                         Context cont, int ind, int opt) {
