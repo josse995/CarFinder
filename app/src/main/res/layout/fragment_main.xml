@@ -23,17 +23,22 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/table_cars_main"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#FFFFFF"/>
+                android:layout_height="match_parent">
 
-        </LinearLayout>
+                <ListView
+                    android:id="@+id/table_cars_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"/>
+
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

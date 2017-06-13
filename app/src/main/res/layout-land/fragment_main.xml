@@ -2,7 +2,8 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimaryDark">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,19 +23,26 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <ScrollView
             android:baselineAligned="false"
             android:layout_width="235dp"
             android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/table_cars_main"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="#FFFFFF"/>
-        </LinearLayout>
+            <LinearLayout
+                android:baselineAligned="false"
+                android:layout_width="235dp"
+                android:layout_height="wrap_content">
+
+                <ListView
+                    android:id="@+id/table_cars_main"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"/>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fb_addLocation"

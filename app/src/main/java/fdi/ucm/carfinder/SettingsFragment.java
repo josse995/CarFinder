@@ -177,7 +177,7 @@ public class SettingsFragment extends Fragment {
                         String oldPass = mOldPass.getText().toString();
                         String newPass1 = mNewPass1.getText().toString();
                         String newPass2 = mNewPass2.getText().toString();
-                        if((newPass1.equals(newPass2)) && (newPass1.length() > 3)){
+                        if((newPass1.equals(newPass2)) && (newPass1.length() > 4)){
                             final String pass = sp.getString("Pass", null);
                             mAuthTask = new ChangeTask(usuario, null, oldPass, newPass1, newPass2, getContext(), 1, dialog,
                                     pass != null);
