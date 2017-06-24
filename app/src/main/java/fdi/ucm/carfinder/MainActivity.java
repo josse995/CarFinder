@@ -1,7 +1,6 @@
 package fdi.ucm.carfinder;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,14 +9,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
-        //drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -112,56 +108,31 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
-
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
-            return true;
-        }*
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_GPS) {
-            /*if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Fragment fragment = new MainFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commitAllowingStateLoss();
-            }else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.permission_error)
-                        .setTitle("Error");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        SharedPreferences sp=getSharedPreferences("Login", 0);
-                        SharedPreferences.Editor Ed=sp.edit();
-                        Ed.remove("User");
-                        Ed.remove("Pass");
-                        Ed.commit();
-
-                        finish();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }*/
             Fragment fragment = new MainFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.contenedor, fragment).commitAllowingStateLoss();
         }
+    }
+
+    /**
+     * Elimina los datos almacenados en el dispositivo y procede a mostrar el inicio de sesión.
+     */
+    private void cerrarSesion() {
+        SharedPreferences sp=getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences.Editor Ed=sp.edit();
+        Ed.remove("User");
+        Ed.remove("Pass");
+        Ed.remove("name");
+        Ed.remove("lastName");
+        Ed.remove("date");
+        Ed.apply();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
+        this.finish();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -185,19 +156,7 @@ public class MainActivity extends AppCompatActivity
             fragment = new SettingsFragment();
             this.setTitle(getString(R.string.title_settings));
         } else if (id == R.id.cerrarSesion) {
-            SharedPreferences sp=getSharedPreferences("Login", 0);
-            SharedPreferences.Editor Ed=sp.edit();
-            Ed.remove("User");
-            Ed.remove("Pass");
-            Ed.remove("name");
-            Ed.remove("lastName");
-            Ed.remove("date");
-            Ed.commit();
-
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-
-            this.finish();
+            cerrarSesion();
         }
 
         if (select) {

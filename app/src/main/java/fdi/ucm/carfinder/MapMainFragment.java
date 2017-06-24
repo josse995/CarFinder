@@ -204,11 +204,7 @@ public class MapMainFragment extends Fragment implements LocationListener {
     }
 
     protected void cargarWeb(View view, final Double latitud, final Double longitude, String matr) {
-        String descripcion =
-        /*if (matr == null)
-            descripcion = "&description=actual";
-        else
-            descripcion = "&*/"description="+matr;
+        String descripcion = "&description="+matr;
         String url = "file:///android_asset/mapa.html" + "?lat="
                 + Double.valueOf(latitud).toString()+"&lng="+ Double.valueOf(longitude).toString() +
                 descripcion;

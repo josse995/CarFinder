@@ -12,11 +12,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by Mauri on 24/04/2017.
- */
 
-public class Conexion {
+class Conexion {
 
     private final String url = "http://car.abbaticaffe.com/";
 

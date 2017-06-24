@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 
-/**
- * Created by Josse on 03/05/2017.
- */
 
 public class popup_coches extends Activity {
     @Override

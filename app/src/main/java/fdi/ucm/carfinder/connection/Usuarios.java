@@ -2,10 +2,6 @@ package fdi.ucm.carfinder.connection;
 
 import org.json.JSONObject;
 
-/**
- * Created by Mauri on 24/04/2017.
- */
-
 public class Usuarios extends Conexion {
 
     private final String usuarios = "Usuarios.php";

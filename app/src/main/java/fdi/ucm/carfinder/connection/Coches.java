@@ -2,9 +2,6 @@ package fdi.ucm.carfinder.connection;
 
 import org.json.JSONObject;
 
-/**
- * Created by Mauri on 2/5/17.
- */
 
 public class Coches extends Conexion {
 

@@ -39,29 +39,22 @@ import fdi.ucm.carfinder.modelo.Coche;
  * create an instance of this fragment.
  */
 public class CarsFragment extends Fragment {
-    //private static final String ARG_PARAM1 = "param1";
-    //private static final String ARG_PARAM2 = "param2";
     private CarsTask mAuthTask = null;
-
-    //private String mParam1;
-    //private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     private ArrayList<Coche> coches;
     private CustomListAdapter adapter;
     private int lastSelected;
+    private String user;
 
     public CarsFragment() {
-        // Required empty public constructor
         lastSelected = -1;
     }
 
     public static CarsFragment newInstance(String param1, String param2) {
         CarsFragment fragment = new CarsFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,10 +62,7 @@ public class CarsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }*/
+
     }
 
     @Override
@@ -81,8 +71,7 @@ public class CarsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cars, container, false);
 
-        SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
-        final String user = sp.getString("User", null);
+        this.user = cargarPreferencias();
 
         //Esto te abre el popup_cars para añadir un coche
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_addCar);
@@ -100,9 +89,6 @@ public class CarsFragment extends Fragment {
     }
 
     private void addListener() {
-        SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
-        final String user = sp.getString("User", null);
-
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.popup_cars,null);
@@ -176,6 +162,12 @@ public class CarsFragment extends Fragment {
         }
     }
 
+    /**
+     * Agrega un coche a la tabla
+     * @param matricula Matricula del coche
+     * @param marca Marca del coche
+     * @param modelo Modelo del coche
+     */
     private void agregarCocheTabla(String matricula, String marca, String modelo) {
         ListView ll = (ListView) getView().findViewById(R.id.table_cars);
         Coche aux = new Coche(matricula, marca, modelo);
@@ -204,6 +196,9 @@ public class CarsFragment extends Fragment {
         });
     }
 
+    /**
+     * Elimina un coche de la tabla
+     */
     private void eliminarCocheTabla() {
         ListView ll = (ListView) getView().findViewById(R.id.table_cars);
         this.coches.remove(lastSelected);
@@ -224,11 +219,18 @@ public class CarsFragment extends Fragment {
         ll.requestLayout();
     }
 
+    /**
+     * Gestiona el cambio del botón agregar a eliminar y viceversa
+     * @param position Coche seleccionado
+     * @param view La vista
+     */
     private void rowListener(int position, View view) {
+        // Deselecciona todos los coches.
         for(int i = 0; i < coches.size(); i++) {
             coches.get(i).setSelected(false);
         }
 
+        //Si el último coche seleccionado no es el actual cambia la selección.
         if (lastSelected != position) {
             lastSelected = position;
             coches.get(position).setSelected(true);
@@ -244,9 +246,6 @@ public class CarsFragment extends Fragment {
                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Coche temp = coches.get(lastSelected);
-
-                            SharedPreferences sp = getActivity().getSharedPreferences("Login",0);
-                            final String user = sp.getString("User", null);
 
                             mAuthTask = new CarsTask(user, getContext(), 2, null, null, temp.getMatricula(), null);
                             mAuthTask.execute((Void) null);
@@ -269,6 +268,7 @@ public class CarsFragment extends Fragment {
                 }
             });
         }
+        //Restaura el botón eliminar a agregar.
         else {
             lastSelected = -1;
             adapter.notifyDataSetChanged();
@@ -308,6 +308,14 @@ public class CarsFragment extends Fragment {
     }
 
     /**
+     * Carga los datos almacenados en el almacenamiento interno.
+     */
+    private String cargarPreferencias() {
+        SharedPreferences sp = getActivity().getSharedPreferences("Login", getActivity().MODE_PRIVATE);
+        return sp.getString("User", null);
+    }
+
+    /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
@@ -323,8 +331,7 @@ public class CarsFragment extends Fragment {
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
+     * Actividad de transacciones de coches en segundo plano.
      */
     private class CarsTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -353,49 +360,54 @@ public class CarsFragment extends Fragment {
         protected Boolean doInBackground(Void... params) {
 
             Coches conexion = new Coches();
-            if(opcion == 0) {
-                JSONObject resultado = conexion.cargarCoches(mEmail, "0");
-                try {
-                    if (Integer.parseInt(resultado.get("errorno").toString()) == 0) {
-                        datos = resultado;
+            JSONObject resultado;
+            switch(opcion) {
+                //Cargar todos los coches del usuario.
+                case 0:
+                    resultado = conexion.cargarCoches(mEmail, "0");
+                    try {
+                        if (Integer.parseInt(resultado.get("errorno").toString()) == 0) {
+                            datos = resultado;
+                            return true;
+                        } else if (Integer.parseInt(resultado.get("errorno").toString()) != 2){
+                            msgError = resultado.get("errorMessage").toString();
+                            return false;
+                        }
                         return true;
-                    } else if (Integer.parseInt(resultado.get("errorno").toString()) != 2){
-                        msgError = resultado.get("errorMessage").toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                         return false;
                     }
-                    return true;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }else if (opcion == 1){
-                JSONObject resultado = conexion.insertarCoche(matr, brand, model, mEmail);
-                try {
-                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                        msgError = resultado.get("errorMessage").toString();
+                //Insertar un coche.
+                case 1:
+                    resultado = conexion.insertarCoche(matr, brand, model, mEmail);
+                    try {
+                        if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                            msgError = resultado.get("errorMessage").toString();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                         return false;
-                    } else {
-                        return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }else if (opcion == 2){
-                JSONObject resultado = conexion.eliminarCoche(matr, mEmail);
-                try {
-                    if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
-                        msgError = resultado.get("errorMessage").toString();
+                //Eliminar un coche.
+                case 2:
+                    resultado = conexion.eliminarCoche(matr, mEmail);
+                    try {
+                        if (Integer.parseInt(resultado.get("errorno").toString()) != 0) {
+                            msgError = resultado.get("errorMessage").toString();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                         return false;
-                    } else {
-                        return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return false;
-                }
+                default: return false;
             }
-            return false;
         }
 
         @Override
@@ -480,11 +492,9 @@ public class CarsFragment extends Fragment {
             if (items.get(position).getSelected()) {
                 ImageView image = (ImageView) v.findViewById(R.id.check);
                 image.setVisibility(View.VISIBLE);
-                //v.setBackgroundColor(Color.parseColor("#36cf48"));
             }else{
                 ImageView image = (ImageView) v.findViewById(R.id.check);
                 image.setVisibility(View.GONE);
-                //v.setBackgroundColor(Color.parseColor("#FFFFFF"));
             }
             return v;
         }

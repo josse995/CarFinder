@@ -25,10 +25,6 @@ import fdi.ucm.carfinder.connection.Coches;
 import fdi.ucm.carfinder.modelo.Coche;
 import fdi.ucm.carfinder.modelo.Posiciones;
 
-/**
- * Created by Mauri on 09/05/2017.
- */
-
 public class MainFragment extends MapMainFragment {
 
     private ArrayList<Coche> coches;
