@@ -159,13 +159,6 @@ public class MainFragment extends MapMainFragment {
             view.setSelected(true);
 
             if(!posicionesCoches.isEmpty()) {
-                /*if (position < posicionesCoches.size()) {
-                    if (coches.get(position).getMatricula().equals(posicionesCoches.get(position).getMatricula())) {
-                        Double lat = Double.parseDouble(posicionesCoches.get(position).getLatitud());
-                        Double lon = Double.parseDouble(posicionesCoches.get(position).getLongitud());
-                        cargarWeb(view, lat, lon, temp.getMatricula());
-                    }
-                } else {*/
                     int i = 0;
                     Boolean encontrado = false;
                     while (i < posicionesCoches.size() && !encontrado) {

@@ -142,7 +142,7 @@ public class SettingsFragment extends Fragment {
 
                         }else{
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            builder.setMessage("Las contraseñas no coinciden o no tienen la longitud necesaria").setTitle("Error");
+                            builder.setMessage("El email no tiene el formato correcto").setTitle("Error");
                             AlertDialog alert = builder.create();
                             alert.show();
                         }
@@ -308,7 +308,13 @@ public class SettingsFragment extends Fragment {
             mAuthTask = null;
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             if(success){
-                if (opcion == 1 && rememberPass) {
+                if (opcion == 0) {
+                    SharedPreferences sp = getActivity().getSharedPreferences("Login", 0);
+                    SharedPreferences.Editor Ed = sp.edit();
+                    Ed.putString("User",newEmail);
+                    Ed.apply();
+                }
+                else if (opcion == 1 && rememberPass) {
                     SharedPreferences sp = getActivity().getSharedPreferences("Login", 0);
                     SharedPreferences.Editor Ed = sp.edit();
                     Ed.putString("Pass",newPass1);
